@@ -9,5 +9,15 @@
   "keywords": [],
   "author": "Hasan Darwish",
   "license": "ISC",
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@10.25.0",
+  "dependencies": {
+    "express": "^5.2.1",
+    "puppeteer": "^25.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
 }
