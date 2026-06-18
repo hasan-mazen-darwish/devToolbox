@@ -4,9 +4,10 @@
   "description": "The Toolbox every programmer needs",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
+    "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc"
   },
+  "type": "module",
   "keywords": [],
   "author": "Hasan Darwish",
   "license": "ISC",
