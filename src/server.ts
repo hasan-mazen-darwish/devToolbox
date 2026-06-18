@@ -1,48 +1,38 @@
 import express from "express"
 import { config as dotEnvConfig } from "dotenv"
-import puppeteer from "puppeteer"
+import puppeteer, { type Browser } from "puppeteer"
+import { takeScreenshot } from "./libs/screenshot"
 
 dotEnvConfig()
 const app = express()
 const PORT: Number = Number(process.env.PORT) || 7000
 
-async function takeScreenshot(url: string, option: "buffer"): Promise<Buffer>
-async function takeScreenshot(url: string, option: "base64"): Promise<string>
-async function takeScreenshot(url: string, option: "buffer" | "base64"): Promise<Buffer | string> {
-  const browser = await puppeteer.launch({ headless: true })
+let globalBrowser: Browser | null = null;
 
-  try {
-    const page = await browser.newPage()
-    await page.goto(url, {
-      waitUntil: "networkidle2"
-    })
-
-    const screenshot = await page.screenshot({
-      fullPage: true,
-      encoding: option == "buffer" ? "binary" : "base64",
-      type: "webp"
-    })
-
-    return screenshot as Buffer | string
-  }
-  catch(error) {
-    throw error
-  }
-  finally {
-    await browser.close()
+async function getBrowser(): Promise<void> {
+  if(!globalBrowser) {
+    const browser = await puppeteer.launch()
+    globalBrowser = browser
   }
 }
+
+await getBrowser()
+
 
 app.get("/", (req, res) => {
   res.send("Hello from \"/\"")
 })
 
 app.get("/dev/screenshot", async (req, res) => {
-  const file = await takeScreenshot("http://localhost:7000/", "base64")
+  const file = await takeScreenshot(globalBrowser!, {
+    option: "base64",
+    url: "http://localhost:7000/"
+  })
   res.send(`<img src="data:image/webp;base64,${file}" />`)
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await getBrowser()
   console.log(`--------------------------------------------`)
   console.log(`App is running successfully on port ${PORT}.`)
   console.log("\n")
