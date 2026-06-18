@@ -28,27 +28,31 @@ interface ScreenshotOptions {
 
 async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "buffer" }): Promise<Buffer>
 async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "base64" }): Promise<string>
+// @ts-ignore
 async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Promise<Buffer | string> {
   let page: Page | null = null
-  try {
-    page = await browser.newPage()
-    await page.goto(options.url, {
-      waitUntil: "networkidle2"
-    })
+  const retriesCount = 3
 
-    const screenshot = await page.screenshot({
-      fullPage: true,
-      encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
-      type: "webp"
-    })
+  for(let i = 1 ; i <= retriesCount ; i++) {
+    try {
+      page = await browser.newPage()
+      await page.goto(options.url, {
+        waitUntil: "networkidle2"
+      })
 
-    return screenshot as Buffer | string
-  }
-  catch(error) {
-    throw error
-  }
-  finally {
-    await page?.close()
+      const screenshot = await page.screenshot({
+        fullPage: true,
+        encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
+        type: "webp"
+      })
+
+      return screenshot as Buffer | string
+    }
+    catch(error) {
+      console.error(`Opening new page with URL ${options.url}, Try ${i} failed with error. Retrying...`)
+      console.log(error)
+      if(i == retriesCount) throw error
+    }
   }
 }
 

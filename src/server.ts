@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 app.get("/dev/screenshot", async (req, res) => {
   const file = await takeScreenshot(globalBrowser!, {
     option: "base64",
-    url: "http://localhost:7000/"
+    url: "https://google.com/"
   })
   res.send(`<img src="data:image/webp;base64,${file}" />`)
 })
