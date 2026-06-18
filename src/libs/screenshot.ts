@@ -1,0 +1,55 @@
+import type { Browser, Page } from "puppeteer"
+
+interface ScreenshotOptions {
+  url: string
+  option?: "buffer" | "base64"
+}
+
+/**
+ * The main screenshotting function that returns the image in either base64 string or a buffer object.
+ * 
+ * @param browser The puppeteer browser instance used for the screenshotting.
+ * 
+ * @param options the options you give to the screenshotting function.
+ * 
+ * `options.url`: **required**. the URL given to the function so it can copy it.
+ * 
+ * `options.option`: *optional*. takes the value of either `buffer` or `base64`. default is `buffer`.
+ * 
+ * @example
+ * import puppeteer from "puppeteer";
+ * 
+ * const browser = await puppeteer
+ * takeScreenshot(browser, {
+ *  url: "https://google.com/",
+ *  option: "base64"
+ * });
+ */
+
+async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "buffer" }): Promise<Buffer>
+async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "base64" }): Promise<string>
+async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Promise<Buffer | string> {
+  let page: Page | null = null
+  try {
+    page = await browser.newPage()
+    await page.goto(options.url, {
+      waitUntil: "networkidle2"
+    })
+
+    const screenshot = await page.screenshot({
+      fullPage: true,
+      encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
+      type: "webp"
+    })
+
+    return screenshot as Buffer | string
+  }
+  catch(error) {
+    throw error
+  }
+  finally {
+    await page?.close()
+  }
+}
+
+export { takeScreenshot }
