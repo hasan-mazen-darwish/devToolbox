@@ -38,6 +38,11 @@ app.listen(PORT, async () => {
   console.log("\n")
 })
 
+// Added a health checking route
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', browser: globalBrowser ? 'connected' : 'disconnected' })
+})
+
 // After your app.listen()
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, closing browser...')
