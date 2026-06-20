@@ -37,3 +37,16 @@ app.listen(PORT, async () => {
   console.log(`App is running successfully on port ${PORT}.`)
   console.log("\n")
 })
+
+// After your app.listen()
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, closing browser...')
+  if (globalBrowser) await globalBrowser.close()
+  process.exit(0)
+})
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, closing browser...')
+  if (globalBrowser) await globalBrowser.close()
+  process.exit(0)
+})

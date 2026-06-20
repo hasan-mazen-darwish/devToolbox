@@ -23,7 +23,7 @@ interface ScreenshotOptions {
  * 
  * `options.imageExtension`: *optional*. takes three values: `webp`, `png` or `jpeg`. this defines the type of the image (as follows). default is `webp`
  * 
- * `options.qualityOfImage`: *optional*. takes a number
+ * `options.qualityOfImage`: *optional*. takes a number between 0 and 100. **NOT** applicable to PNG screenshots.
  * 
  * `options.optimizeForSpeed`: *optional*. self explanatory, default is `true`.
  * 
@@ -58,8 +58,12 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
     try {
       page = await browser.newPage()
       await page.goto(options.url, {
-        waitUntil: "networkidle2"
+        waitUntil: "networkidle2",
+        timeout: 30_000
       })
+
+      // Add user-agent to avoid blocking
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
       const defaultQuality = 70
       const qualityOfImage = Math.max(0, Math.min(options.qualityOfImage || defaultQuality, 100));
@@ -79,6 +83,9 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
       console.error(`Opening new page with URL ${options.url}, Try ${i} failed with error. Retrying...`)
       console.log(error)
       if(i == retriesCount) throw error
+    }
+    finally {
+      if(page) await page.close()
     }
   }
 }
