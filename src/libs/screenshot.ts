@@ -47,7 +47,7 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
       })
 
       const defaultQuality = 70
-      const qualityOfImage = Math.max(Math.min(options.qualityOfImage || defaultQuality), 0)
+      const qualityOfImage = Math.max(0, Math.min(options.qualityOfImage || defaultQuality, 100));
 
       const screenshot = await page.screenshot({
         fullPage: true,
