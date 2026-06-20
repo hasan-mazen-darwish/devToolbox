@@ -1,11 +1,12 @@
-import type { Browser, Page } from "puppeteer"
+import type { Browser, Page, Viewport } from "puppeteer"
 
 interface ScreenshotOptions {
   url: string
   option?: "buffer" | "base64",
   imageExtension?: "webp" | "png" | "jpeg",
   qualityOfImage?: number,
-  optimizeForSpeed?: boolean
+  optimizeForSpeed?: boolean,
+  viewport?: Viewport
 }
 
 /**
@@ -24,6 +25,14 @@ interface ScreenshotOptions {
  * `options.qualityOfImage`: *optional*. takes a number
  * 
  * `options.optimizeForSpeed`: *optional*. self explanatory, default is `true`.
+ * 
+ * `options.viewport`: *optional*. has these properties:
+ * - `width`: the width of the viewed page. (number)
+ * - `height`: the height of the viewed page. (number)
+ * - `deviceScaleFactor`: the "zoom" the page will be screenshotted at. (number)
+ * - `isMobile`: self explanatory. (boolean)
+ * - `isLandscape`: tells the page if the device is on landscape mode, in other words, if the width is always the biggest number. (boolean)
+ * - `hasTouch`: self explanatory. (boolean)
  * 
  * @example
  * import puppeteer from "puppeteer";
@@ -52,6 +61,7 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
       const defaultQuality = 70
       const qualityOfImage = Math.max(0, Math.min(options.qualityOfImage || defaultQuality, 100));
 
+      await page.setViewport(options.viewport || null)
       const screenshot = await page.screenshot({
         fullPage: true,
         encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
