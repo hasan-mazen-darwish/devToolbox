@@ -6,7 +6,8 @@ interface ScreenshotOptions {
   imageExtension?: "webp" | "png" | "jpeg",
   qualityOfImage?: number,
   optimizeForSpeed?: boolean,
-  viewport?: Viewport
+  viewport?: Viewport,
+  fullPage?: boolean,
 }
 
 /**
@@ -33,6 +34,8 @@ interface ScreenshotOptions {
  * - `isMobile`: self explanatory. (boolean)
  * - `isLandscape`: tells the page if the device is on landscape mode, in other words, if the width is always the biggest number. (boolean)
  * - `hasTouch`: self explanatory. (boolean)
+ * 
+ * `options.fullPage`: *optional*. it defines to either capture an image of the full page or just a part. default is `true`.
  * 
  * @example
  * import puppeteer from "puppeteer";
@@ -63,11 +66,11 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
 
       await page.setViewport(options.viewport || null)
       const screenshot = await page.screenshot({
-        fullPage: true,
+        fullPage: options.fullPage ?? true,
         encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
         type: options.imageExtension || "webp",
         quality: qualityOfImage,
-        optimizeForSpeed: options.optimizeForSpeed || false
+        optimizeForSpeed: options.optimizeForSpeed ?? true
       })
 
       return screenshot as Buffer | string
