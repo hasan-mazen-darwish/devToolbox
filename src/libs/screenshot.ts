@@ -4,7 +4,8 @@ interface ScreenshotOptions {
   url: string
   option?: "buffer" | "base64",
   imageExtension?: "webp" | "png" | "jpeg",
-  qualityOfImage?: number
+  qualityOfImage?: number,
+  optimizeForSpeed?: boolean
 }
 
 /**
@@ -21,6 +22,8 @@ interface ScreenshotOptions {
  * `options.imageExtension`: *optional*. takes three values: `webp`, `png` or `jpeg`. this defines the type of the image (as follows). default is `webp`
  * 
  * `options.qualityOfImage`: *optional*. takes a number
+ * 
+ * `options.optimizeForSpeed`: *optional*. self explanatory, default is `true`.
  * 
  * @example
  * import puppeteer from "puppeteer";
@@ -53,7 +56,8 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
         fullPage: true,
         encoding: options.option ? (options.option == "buffer" ? "binary" : "base64") : "binary",
         type: options.imageExtension || "webp",
-        quality: qualityOfImage
+        quality: qualityOfImage,
+        optimizeForSpeed: options.optimizeForSpeed || false
       })
 
       return screenshot as Buffer | string
