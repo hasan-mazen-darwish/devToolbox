@@ -3,10 +3,17 @@ import { config as dotEnvConfig } from "dotenv"
 import { takeScreenshot, type ScreenshotOptions } from "./libs/screenshot"
 import { Cluster } from "puppeteer-cluster"
 import type { Page } from "puppeteer"
+import cors from "cors"
+import helmet from "helmet"
 
 dotEnvConfig()
 const app = express()
-const PORT: Number = Number(process.env.PORT) || 7000
+const PORT: number = Number(process.env.PORT) || 7000
+
+// Express middlewares
+app.use(express.json())
+app.use(cors())
+app.use(helmet())
 
 // Creating the Cluster (or browser pool)
 const cluster = await Cluster.launch({
