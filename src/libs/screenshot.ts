@@ -1,4 +1,4 @@
-import type { Browser, Page, Viewport } from "puppeteer"
+import type { Page, Viewport } from "puppeteer"
 
 interface ScreenshotOptions {
   url: string
@@ -13,7 +13,7 @@ interface ScreenshotOptions {
 /**
  * The main screenshotting function that returns the image in either base64 string or a buffer object.
  * 
- * @param browser The puppeteer browser instance used for the screenshotting.
+ * @param page The puppeteer page instance used for the screenshotting.
  * 
  * @param options the options you give to the screenshotting function.
  * 
@@ -47,16 +47,14 @@ interface ScreenshotOptions {
  * });
  */
 
-async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "buffer" }): Promise<Buffer>
-async function takeScreenshot(browser: Browser, options: ScreenshotOptions & { option: "base64" }): Promise<string>
+async function takeScreenshot(page: Page, options: ScreenshotOptions & { option: "buffer" }): Promise<Buffer>
+async function takeScreenshot(page: Page, options: ScreenshotOptions & { option: "base64" }): Promise<string>
 // @ts-ignore
-async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Promise<Buffer | string> {
-  let page: Page | null = null
+async function takeScreenshot(page: Page, options: ScreenshotOptions): Promise<Buffer | string> {
   const retriesCount = 3
 
   for(let i = 1 ; i <= retriesCount ; i++) {
     try {
-      page = await browser.newPage()
       await page.goto(options.url, {
         waitUntil: "networkidle2",
         timeout: 30_000
@@ -84,10 +82,7 @@ async function takeScreenshot(browser: Browser, options: ScreenshotOptions): Pro
       console.log(error)
       if(i == retriesCount) throw error
     }
-    finally {
-      if(page) await page.close()
-    }
   }
 }
 
-export { takeScreenshot }
+export { takeScreenshot, type ScreenshotOptions }

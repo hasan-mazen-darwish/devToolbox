@@ -1,22 +1,28 @@
 import express from "express"
 import { config as dotEnvConfig } from "dotenv"
-import puppeteer, { type Browser } from "puppeteer"
-import { takeScreenshot } from "./libs/screenshot"
+import { takeScreenshot, type ScreenshotOptions } from "./libs/screenshot"
+import { Cluster } from "puppeteer-cluster"
+import type { Page } from "puppeteer"
 
 dotEnvConfig()
 const app = express()
 const PORT: Number = Number(process.env.PORT) || 7000
 
-let globalBrowser: Browser | null = null;
-
-async function getBrowser(): Promise<void> {
-  if(!globalBrowser) {
-    const browser = await puppeteer.launch()
-    globalBrowser = browser
+// Creating the Cluster (or browser pool)
+const cluster = await Cluster.launch({
+  concurrency: Cluster.CONCURRENCY_CONTEXT,
+  maxConcurrency: 5,
+  puppeteerOptions: {
+    headless: true
   }
-}
+})
 
-await getBrowser()
+// Creating the task that will run for screenshots:
+await cluster.task(async ({page, data: {options}} : {page: Page, data: {options: ScreenshotOptions}}) => {
+  // @ts-ignore
+  const screenshot = await takeScreenshot(page, options)
+  return screenshot
+})
 
 
 app.get("/", (req, res) => {
@@ -24,15 +30,16 @@ app.get("/", (req, res) => {
 })
 
 app.get("/dev/screenshot", async (req, res) => {
-  const file = await takeScreenshot(globalBrowser!, {
-    option: "base64",
-    url: "https://google.com/"
-  })
+  const file = await cluster.execute({
+    options: {
+      url: "https://google.com/",
+      option: "base64"
+    }
+  } as {options: ScreenshotOptions})
   res.send(`<img src="data:image/webp;base64,${file}" />`)
 })
 
 app.listen(PORT, async () => {
-  await getBrowser()
   console.log(`--------------------------------------------`)
   console.log(`App is running successfully on port ${PORT}.`)
   console.log("\n")
@@ -41,12 +48,12 @@ app.listen(PORT, async () => {
 // After your app.listen()
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, closing browser...')
-  if (globalBrowser) await globalBrowser.close()
+  if(cluster) await cluster.close()
   process.exit(0)
 })
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received, closing browser...')
-  if (globalBrowser) await globalBrowser.close()
+  if(cluster) await cluster.close()
   process.exit(0)
 })
