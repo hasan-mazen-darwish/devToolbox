@@ -17,13 +17,16 @@ importers:
       puppeteer:
         specifier: ^25.1.0
         version: 25.1.0
+      puppeteer-cluster:
+        specifier: ^0.25.0
+        version: 0.25.0(puppeteer@25.1.0)
     devDependencies:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
       '@types/node':
         specifier: ^25.9.3
-        version: 25.9.3
+        version: 25.9.4
       concurrently:
         specifier: ^10.0.3
         version: 10.0.3
@@ -217,8 +220,8 @@ packages:
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
-  '@types/node@25.9.3':
-    resolution: {integrity: sha512-603BddQMv3pUcr4U2dhujk83N2tTDVr/34wII2B6bJy6g+8WD6yUb11jszNs0gdi4PesVWl7ABt8nYMVpnLUcg==}
+  '@types/node@25.9.4':
+    resolution: {integrity: sha512-dszCsrKb5U7ZsVZBWiHFklTloVl0mSEnWH/iZXfZUlI4rzCUnsvGmgqfuVRHL54ugE7/wRuxEIXRa2iMZ+BG6g==}
 
   '@types/qs@6.15.1':
     resolution: {integrity: sha512-GZHUBZR9hckSUhrxmp1nG6NwdpM9fCunJwyThLW1X3AyHgd9IlHb6VANpQQqDr2o/qQp6McZ3y/IA2rVzKzSbw==}
@@ -517,6 +520,11 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
+  puppeteer-cluster@0.25.0:
+    resolution: {integrity: sha512-WEqR6ccYoEMOqW5HAnzs8TJ40xfEaaiZ0LJG1IM8poMGdAgAQBmrZX4n+LLNvVY6G90R22rYZjuPDrw0ho5t+A==}
+    peerDependencies:
+      puppeteer: '>=24.0.0'
+
   puppeteer-core@25.1.0:
     resolution: {integrity: sha512-jKzy5y4WG6uNuFbTWgW1D7mqoT9o0nllc/6a1DGF775T1mPmgw3scdFEtEq67yVFikavQmbYq6NLfbTfxHSlqQ==}
     engines: {node: '>=22.12.0'}
@@ -684,8 +692,8 @@ packages:
     resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
-  yargs@17.7.2:
-    resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
+  yargs@17.7.3:
+    resolution: {integrity: sha512-GZtjxm/J/4TSxuL3FNYjCmLktBTnIw/rVmKSIyKeYAZpmJB2ig9VauCC5xsa82GNKVKDAqpOn3KVzNt0zmrU0g==}
     engines: {node: '>=12'}
 
   yargs@18.0.0:
@@ -778,20 +786,20 @@ snapshots:
   '@puppeteer/browsers@3.0.4':
     dependencies:
       modern-tar: 0.7.6
-      yargs: 17.7.2
+      yargs: 17.7.3
 
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 25.9.3
+      '@types/node': 25.9.4
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 25.9.3
+      '@types/node': 25.9.4
 
   '@types/express-serve-static-core@5.1.1':
     dependencies:
-      '@types/node': 25.9.3
+      '@types/node': 25.9.4
       '@types/qs': 6.15.1
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -804,7 +812,7 @@ snapshots:
 
   '@types/http-errors@2.0.5': {}
 
-  '@types/node@25.9.3':
+  '@types/node@25.9.4':
     dependencies:
       undici-types: 7.24.6
 
@@ -814,12 +822,12 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 25.9.3
+      '@types/node': 25.9.4
 
   '@types/serve-static@2.2.0':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 25.9.3
+      '@types/node': 25.9.4
 
   accepts@2.0.0:
     dependencies:
@@ -1118,6 +1126,13 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
+  puppeteer-cluster@0.25.0(puppeteer@25.1.0):
+    dependencies:
+      debug: 4.4.3
+      puppeteer: 25.1.0
+    transitivePeerDependencies:
+      - supports-color
+
   puppeteer-core@25.1.0:
     dependencies:
       '@puppeteer/browsers': 3.0.4
@@ -1308,7 +1323,7 @@ snapshots:
 
   yargs-parser@22.0.0: {}
 
-  yargs@17.7.2:
+  yargs@17.7.3:
     dependencies:
       cliui: 8.0.1
       escalade: 3.2.0
