@@ -3,16 +3,9 @@
   "version": "1.0.0",
   "description": "The Toolbox every programmer needs",
   "main": "index.js",
-  "imports": {
-    "#client/*" : "./client/*"
-  },
   "scripts": {
-    "dev": "concurrently -n \"Backend, Frontend\" -c \"RED, BLUE\" \"nodemon --exec tsx src/server.ts\" \"pnpm client-dev\"",
-    "build": "tsc",
-    "client-dev": "vite",
-    "client-build": "tsc -b && vite build",
-    "client-lint": "eslint .",
-    "client-preview": "vite preview"
+    "dev": "concurrently -n \"Backend, Frontend\" -c \"red, blue\" \"nodemon --exec tsx src/server.ts --ignore ./client\" \"cd ./client && pnpm dev\"",
+    "build": "tsc"
   },
   "type": "module",
   "keywords": [],
@@ -25,26 +18,13 @@
     "express": "^5.2.1",
     "helmet": "^8.2.0",
     "puppeteer": "^25.1.0",
-    "puppeteer-cluster": "^0.25.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "puppeteer-cluster": "^0.25.0"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "concurrent": "^0.3.2",
     "concurrently": "^10.0.3",
-    "eslint": "^10.3.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "globals": "^17.6.0",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "typescript": "^6.0.3"
   }
 }
