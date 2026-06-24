@@ -1,11 +1,14 @@
 import './App.css'
+import CssBaseLine from "@mui/material/CssBaseline"
 
-import Button from "@mui/material/Button"
+import AppBar from './components/landpage/AppBar'
 
 function App() {
   return (
     <>
-      <Button>Hello world</Button>
+      <CssBaseLine enableColorScheme />
+      
+      <AppBar />
     </>
   )
 }
