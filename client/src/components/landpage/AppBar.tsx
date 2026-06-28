@@ -7,6 +7,7 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
 import LoginIcon from '@mui/icons-material/Login'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import InfoIcon from '@mui/icons-material/Info'
+import ConstructionIcon from '@mui/icons-material/Construction'
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -49,29 +50,45 @@ export default function AppBar() {
     >
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
-          <IconButton onClick={handleClick} id={buttonId}><AccountCircleRoundedIcon fontSize='large'/></IconButton>
-          <Menu id={menuId} open={menuOpen} anchorEl={menuAnchor} onClose={handleClose} slotProps={{
-            list: {
-              "aria-labelledby": buttonId
-            }
+          {/* Buttons of menus: */}
+          <Container>
+            <IconButton onClick={handleClick} id={buttonId}><AccountCircleRoundedIcon fontSize='large'/></IconButton>
+            <Menu id={menuId} open={menuOpen} anchorEl={menuAnchor} onClose={handleClose} slotProps={{
+              list: {
+                "aria-labelledby": buttonId
+              }
+            }}>
+              <MenuItem>
+                <ListItemIcon><LoginIcon fontSize='small' /></ListItemIcon>
+                <ListItemText>Log in</ListItemText>
+              </MenuItem>
+
+              <MenuItem>
+                <ListItemIcon><PersonAddAltIcon fontSize='small' /></ListItemIcon>
+                <ListItemText>Sign up</ListItemText>
+              </MenuItem>
+
+              <Divider />
+              
+              <MenuItem>
+                <ListItemIcon><InfoIcon fontSize='small' /></ListItemIcon>
+                <ListItemText>About us</ListItemText>
+              </MenuItem>
+            </Menu>
+          </Container>
+
+          {/* Logo: (Temporarily without a visual logo) */}
+          <Container sx={{
+            color: "black",
+            display: "flex",
+            alignItems: "center",
+            fontSize: "x-large",
+            fontFamily: "titleFont, sans-serif",
+            userSelect: "none"
           }}>
-            <MenuItem>
-              <ListItemIcon><LoginIcon fontSize='small' /></ListItemIcon>
-              <ListItemText>Log in</ListItemText>
-            </MenuItem>
-
-            <MenuItem>
-              <ListItemIcon><PersonAddAltIcon fontSize='small' /></ListItemIcon>
-              <ListItemText>Sign up</ListItemText>
-            </MenuItem>
-
-            <Divider />
-            
-            <MenuItem>
-              <ListItemIcon><InfoIcon fontSize='small' /></ListItemIcon>
-              <ListItemText>About us</ListItemText>
-            </MenuItem>
-          </Menu>
+            <ConstructionIcon fontSize='large' />
+            DevToolbox
+          </Container>
         </StyledToolbar>
       </Container>
     </AppBarMaterial>
