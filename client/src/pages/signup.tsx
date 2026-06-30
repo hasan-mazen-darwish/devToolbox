@@ -17,6 +17,7 @@ export default function SignupPage(): React.ReactElement {
         fullWidth required
         sx={{marginY: 1}}
         helperText="The E-mail will be used everytime you enter the website. Required."
+        id="emailInput"
       />
 
       <TextField
@@ -26,9 +27,20 @@ export default function SignupPage(): React.ReactElement {
         fullWidth required
         sx={{marginY: 1}}
         helperText="The password will be used everytime you enter the website with the E-mail above. Required."
+        id="passwordInput"
       />
 
-      <Button variant="contained" id="button" fullWidth>Signup!</Button>
+      <TextField
+        label="Re-type password"
+        variant="standard"
+        type="password"
+        fullWidth required
+        sx={{marginY: 1}}
+        helperText="Repeat the password you wrote above. Required."
+        id="retypePasswordInput"
+      />
+
+      <Button variant="contained" sx={{fontSize: "large"}} fullWidth id="signupButton">Signup!</Button>
     </form>
 
     <Divider sx={{marginY: 4, fontStyle: "italic"}}>or use a third party service</Divider>
