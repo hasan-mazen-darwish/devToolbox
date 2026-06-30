@@ -3,6 +3,7 @@ import CssBaseLine from "@mui/material/CssBaseline"
 import AppBar from './components/landpage/AppBar'
 import { Route, Routes } from "react-router-dom"
 import { Container, createTheme, ThemeProvider } from "@mui/material"
+import SignupPage from "./pages/signup"
 
 function App() {
   const theme = createTheme({
@@ -33,11 +34,13 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseLine enableColorScheme />
       <AppBar />
+      {/* Giving some padding in order to not having the App Bar covering the whole screen */}
       <Container sx={{paddingTop: "100px"}}></Container>
 
       <Routes>
         <Route path="/">
           <Route index element={<></>}></Route>
+          <Route path="signup/" element={<SignupPage />}></Route>
         </Route>
         <Route path="*"></Route>
       </Routes>

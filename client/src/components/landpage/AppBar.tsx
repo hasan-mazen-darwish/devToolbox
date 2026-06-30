@@ -8,6 +8,7 @@ import LoginIcon from '@mui/icons-material/Login'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import InfoIcon from '@mui/icons-material/Info'
 import ConstructionIcon from '@mui/icons-material/Construction'
+import { NavLink } from 'react-router-dom'
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -65,7 +66,7 @@ export default function AppBar() {
 
               <MenuItem>
                 <ListItemIcon><PersonAddAltIcon fontSize='small' /></ListItemIcon>
-                <ListItemText>Sign up</ListItemText>
+                <ListItemText><NavLink to="signup">Sign up</NavLink></ListItemText>
               </MenuItem>
 
               <Divider />
@@ -78,16 +79,18 @@ export default function AppBar() {
           </Container>
 
           {/* Logo: (Temporarily without a visual logo) */}
-          <Container sx={{
-            color: "black",
-            display: "flex",
-            alignItems: "center",
-            fontSize: "x-large",
-            fontFamily: "titleFont, sans-serif",
-            userSelect: "none"
-          }}>
-            <ConstructionIcon fontSize='large' />
-            DevToolbox
+            <Container sx={{
+              color: "black",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "x-large",
+              fontFamily: "titleFont, sans-serif",
+              userSelect: "none"
+            }}>
+            <NavLink to=".">
+              <ConstructionIcon fontSize='large' />
+              DevToolbox
+            </NavLink>
           </Container>
         </StyledToolbar>
       </Container>
