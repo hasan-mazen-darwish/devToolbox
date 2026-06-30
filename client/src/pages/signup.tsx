@@ -2,53 +2,56 @@ import { Button, ButtonGroup, Container, Divider, TextField } from "@mui/materia
 import React from "react"
 import GitHubIcon from '@mui/icons-material/GitHub'
 import GoogleIcon from '@mui/icons-material/Google'
+import { useTranslation } from "react-i18next"
 
 export default function SignupPage(): React.ReactElement {
+  const { t } = useTranslation()
+
   return <Container>
     <form method="POST">
-      <center><h1>Welcome to our website!</h1></center>
-      <center><div>Start by making yourself an account here!</div></center>
-      <Divider sx={{marginY: 4, fontStyle: "italic"}}>use your email and password</Divider>
+      <center><h1>{t("signup.title.bigWelcome")}</h1></center>
+      <center><div>{t("signup.title.underBigWelcome")}</div></center>
+      <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.useEmailPassword")}</Divider>
 
       <TextField
-        label="E-mail"
+        label={t("signup.textField.email.label")}
         variant="standard"
         type="email"
         fullWidth required
         sx={{marginY: 1}}
-        helperText="The E-mail will be used everytime you enter the website. Required."
+        helperText={t("signup.textField.email.helper")}
         id="emailInput"
       />
 
       <TextField
-        label="E-mail password"
+        label={t("signup.textField.password.label")}
         variant="standard"
         type="password"
         fullWidth required
         sx={{marginY: 1}}
-        helperText="The password will be used everytime you enter the website with the E-mail above. Required."
+        helperText={t("signup.textField.password.helper")}
         id="passwordInput"
       />
 
       <TextField
-        label="Re-type password"
+        label={t("signup.textField.repassword.label")}
         variant="standard"
         type="password"
         fullWidth required
         sx={{marginY: 1}}
-        helperText="Repeat the password you wrote above. Required."
+        helperText={t("signup.textField.repassword.helper")}
         id="retypePasswordInput"
       />
 
-      <Button variant="contained" sx={{fontSize: "large"}} fullWidth id="signupButton">Signup!</Button>
+      <Button variant="contained" sx={{fontSize: "large"}} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
     </form>
 
-    <Divider sx={{marginY: 4, fontStyle: "italic"}}>or use a third party service</Divider>
+    <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
 
     <center>
       <ButtonGroup variant="contained">
-        <Button sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>Github</Button>
-        <Button sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>Google</Button>
+        <Button sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>{t("signup.githubText")}</Button>
+        <Button sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
       </ButtonGroup>
     </center>
   </Container>

@@ -1,5 +1,5 @@
 import { styled, alpha } from '@mui/material/styles'
-import {AppBar as AppBarMaterial, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material'
+import {AppBar as AppBarMaterial, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import Container from '@mui/material/Container'
 import React from 'react'
@@ -8,7 +8,9 @@ import LoginIcon from '@mui/icons-material/Login'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import InfoIcon from '@mui/icons-material/Info'
 import ConstructionIcon from '@mui/icons-material/Construction'
+import LanguageIcon from '@mui/icons-material/Language'
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -26,17 +28,31 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: '8px 12px',
 }));
 
+// Available Languages
+const availableLanguages = ["en", "ar"]
+
 export default function AppBar() {
-  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
-  const menuOpen = Boolean(menuAnchor)
+  const [profileMenuAnchor, setProfileMenuAnchor] = React.useState<null | HTMLElement>(null)
+  const profileMenuOpen = Boolean(profileMenuAnchor)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    setMenuAnchor(event.currentTarget)
+  const [languageMenuAnchor, setLanguageMenuAnchor] = React.useState<null | HTMLElement>(null)
+  const languageMenuOpen = Boolean(languageMenuAnchor)
+
+  const { t, i18n } = useTranslation()
+  
+  const handleClickForProfileButton = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setProfileMenuAnchor(event.currentTarget)
   }
-  const handleClose = (): void => setMenuAnchor(null)
+  const handleClickForLanguageButton = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    setLanguageMenuAnchor(event.currentTarget)
+  }
+  const handleProfileMenuClose = (): void => setProfileMenuAnchor(null)
+  const handleLanguageMenuClose = (): void => setLanguageMenuAnchor(null)
 
-  const buttonId = React.useId()
-  const menuId   = React.useId()
+  const profileButtonId = React.useId()
+  const profileMenuId   = React.useId()
+  const languageButtonId = React.useId()
+  const languageMenuId   = React.useId()
 
   return (
     <AppBarMaterial
@@ -53,28 +69,39 @@ export default function AppBar() {
         <StyledToolbar variant="dense" disableGutters>
           {/* Buttons of menus: */}
           <Container>
-            <IconButton onClick={handleClick} id={buttonId}><AccountCircleRoundedIcon fontSize='large'/></IconButton>
-            <Menu id={menuId} open={menuOpen} anchorEl={menuAnchor} onClose={handleClose} slotProps={{
+            {/* The profile button: */}
+            <IconButton onClick={handleClickForProfileButton} id={profileButtonId}><AccountCircleRoundedIcon fontSize='large'/></IconButton>
+            <Menu id={profileMenuId} open={profileMenuOpen} anchorEl={profileMenuAnchor} onClose={handleProfileMenuClose} slotProps={{
               list: {
-                "aria-labelledby": buttonId
+                "aria-labelledby": profileButtonId
               }
             }}>
               <MenuItem>
                 <ListItemIcon><LoginIcon fontSize='small' /></ListItemIcon>
-                <ListItemText>Log in</ListItemText>
+                <ListItemText>{t("appBar.login")}</ListItemText>
               </MenuItem>
 
               <MenuItem>
                 <ListItemIcon><PersonAddAltIcon fontSize='small' /></ListItemIcon>
-                <ListItemText><NavLink to="signup">Sign up</NavLink></ListItemText>
+                <ListItemText><NavLink to="signup">{t("appBar.signup")}</NavLink></ListItemText>
               </MenuItem>
 
               <Divider />
               
               <MenuItem>
                 <ListItemIcon><InfoIcon fontSize='small' /></ListItemIcon>
-                <ListItemText>About us</ListItemText>
+                <ListItemText>{t("appBar.about")}</ListItemText>
               </MenuItem>
+            </Menu>
+
+            {/* The language button: */}
+            <IconButton onClick={handleClickForLanguageButton} id={languageButtonId}><LanguageIcon fontSize='large' /></IconButton>
+            <Menu id={languageMenuId} open={languageMenuOpen} anchorEl={languageMenuAnchor} onClose={handleLanguageMenuClose} slotProps={{
+              list: {
+                "aria-labelledby": profileButtonId
+              }
+            }}>
+              {availableLanguages.map(lang => <MenuItem sx={{color: lang == i18n.language ? "green" : "inherit"}} onClick={() => {i18n.changeLanguage(lang)}}>{t("language." + lang)}</MenuItem>)}
             </Menu>
           </Container>
 

@@ -1,0 +1,38 @@
+{
+  "appBar": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "about": "About us"
+  },
+  "language": {
+    "en": "English",
+    "ar": "Arabic - العربية"
+  },
+  "signup": {
+    "title": {
+      "bigWelcome": "Welcome to our website!",
+      "underBigWelcome": "Start by making yourself an account here!"
+    },
+    "divider": {
+      "useEmailPassword": "use your email and password",
+      "or": "or use a third party service"
+    },
+    "textField": {
+      "email": {
+        "label": "E-mail",
+        "helper": "The E-mail will be used everytime you enter the website. Required."
+      },
+      "password": {
+        "label": "E-mail password",
+        "helper": "The password will be used everytime you enter the website with the E-mail above. Required."
+      },
+      "repassword": {
+        "label": "Re-type password",
+        "helper": "Repeat the password you wrote above. Required."
+      }
+    },
+    "githubText": "Github",
+    "googleText": "Google",
+    "signupText": "Sign up"
+  }
+}
