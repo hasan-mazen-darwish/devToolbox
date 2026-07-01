@@ -18,13 +18,17 @@
       "or": "or use a third party service"
     },
     "textField": {
+      "name": {
+        "label": "Name",
+        "helper": "The name you will enter the website with. Required."
+      },
       "email": {
         "label": "E-mail",
         "helper": "The E-mail will be used everytime you enter the website. Required."
       },
       "password": {
         "label": "E-mail password",
-        "helper": "The password will be used everytime you enter the website with the E-mail above. Required."
+        "helper": "The password will be used everytime you enter the website with the E-mail above. Required. The white spaces in the start and the end of the password will be trimmed."
       },
       "repassword": {
         "label": "Re-type password",

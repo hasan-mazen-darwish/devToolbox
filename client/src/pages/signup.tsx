@@ -14,6 +14,16 @@ export default function SignupPage(): React.ReactElement {
       <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.useEmailPassword")}</Divider>
 
       <TextField
+        label={t("signup.textField.name.label")}
+        variant="standard"
+        type="text"
+        fullWidth required
+        sx={{marginY: 1}}
+        helperText={t("signup.textField.name.helper")}
+        id="nameInput"
+      />
+
+      <TextField
         label={t("signup.textField.email.label")}
         variant="standard"
         type="email"
