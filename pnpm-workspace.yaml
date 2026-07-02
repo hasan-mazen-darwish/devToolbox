@@ -3,4 +3,4 @@ allowBuilds:
   puppeteer: true
 packages:
   - 'client'
-  - '.'
+  - 'server'
