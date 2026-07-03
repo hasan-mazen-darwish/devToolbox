@@ -1,8 +1,9 @@
 import { useState } from "react"
 import api from "../axios"
 import type { AxiosError, AxiosRequestConfig } from "axios"
+import type { ApiResponseType } from "../../../../shared/types/responses"
 
-export default function useApi<DataType = any, ErrorType = AxiosError, ServerDataType = any>() {
+export default function useApi<DataType = ApiResponseType, ErrorType = AxiosError, ServerDataType = any>() {
   const [loading, setLoading] = useState<boolean>(false)
   const [data   , setData   ] = useState<DataType | null>(null)
   const [error  , setError  ] = useState<ErrorType | null>(null)
