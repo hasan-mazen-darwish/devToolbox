@@ -41,6 +41,19 @@
     "createdAccountMessage": "Account created successfully! please verify your E-mail via the link we sent you!"
   },
   "error": {
-    "general": "An error occured, please try later."
+    "general": "An error occured, please try later.",
+    "signup": {
+      "email": {
+        "nameTooShort": "The provided name must be at least three characters long.",
+        "emailNotProvided": "You must provide your E-mail address.",
+        "emailNotValid": "Your E-mail is not valid. Please provide a valid one.",
+        "passwordNotProvided": "You must provide the E-mail password.",
+        "passwordTooLong": "Your password is way too long. it must be 100 characters max.",
+        "passwordTooShort": "Your password is way too short. it must be 8 characters min.",
+        "passwordWeak": "Your password is weak. It must contain at least one uppercase letter, one lowercase letter, one number and one special character.",
+        "repasswordNotProvided": "You must fill the password repeating field.",
+        "passwordsDontMatch": "The password and it's repeat must match but it isn't."
+      }
+    }
   }
 }
