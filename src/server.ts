@@ -6,6 +6,9 @@ import type { Page } from "puppeteer"
 import cors from "cors"
 import helmet from "helmet"
 
+// The routers:
+import authRoute from "./routes/auth"
+
 dotEnvConfig()
 const app = express()
 const PORT: number = Number(process.env.PORT) || 7000
@@ -14,6 +17,9 @@ const PORT: number = Number(process.env.PORT) || 7000
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
+
+// Routes
+app.use("/authentication", authRoute)
 
 // Creating the Cluster (or browser pool)
 const cluster = await Cluster.launch({
