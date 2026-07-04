@@ -19,6 +19,14 @@ export async function responser(res: Response, config: ResponserConfig = {
   return res.status(config.status).json(returnData)
 }
 
+export async function invalidInputResponser(res: Response, config: Omit<ErrorResponserConfig, 'status'> = {errorCode: ""}): ReturnTypeInFunctions {
+  return responser(res, {
+    error: true,
+    errorCode: config.errorCode,
+    status: 400
+  })
+}
+
 export async function errorResponser(res: Response, config: ErrorResponserConfig = {errorCode: "", status: 400}): ReturnTypeInFunctions {
   return responser(res, {
     error: true,
