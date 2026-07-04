@@ -49,6 +49,7 @@ export default function SignupPage(): React.ReactElement {
         helperText={t("signup.textField.name.helper")}
         id="nameInput"
         name="name"
+        key={1}
       />
 
       <TextField
@@ -60,6 +61,7 @@ export default function SignupPage(): React.ReactElement {
         helperText={t("signup.textField.email.helper")}
         id="emailInput"
         name="email"
+        key={2}
       />
 
       <TextField
@@ -71,6 +73,7 @@ export default function SignupPage(): React.ReactElement {
         helperText={t("signup.textField.password.helper")}
         id="passwordInput"
         name="password"
+        key={3}
       />
 
       <TextField
@@ -82,17 +85,18 @@ export default function SignupPage(): React.ReactElement {
         helperText={t("signup.textField.repassword.helper")}
         id="retypePasswordInput"
         name="repassword"
+        key={4}
       />
 
-      <Button variant="contained" sx={{fontSize: "large"}} loading={signupLoading} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
+      <Button type="submit" variant="contained" sx={{fontSize: "large"}} loading={signupLoading} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
     </form>
 
     <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
 
     <center>
       <ButtonGroup variant="contained">
-        <Button sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>{t("signup.githubText")}</Button>
-        <Button sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
+        <Button key={1} sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>{t("signup.githubText")}</Button>
+        <Button key={2} sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
       </ButtonGroup>
     </center>
   </Container>
