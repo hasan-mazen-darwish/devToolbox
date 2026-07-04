@@ -21,6 +21,7 @@ export default function SignupPage(): React.ReactElement {
         sx={{marginY: 1}}
         helperText={t("signup.textField.name.helper")}
         id="nameInput"
+        name="name"
       />
 
       <TextField
@@ -31,6 +32,7 @@ export default function SignupPage(): React.ReactElement {
         sx={{marginY: 1}}
         helperText={t("signup.textField.email.helper")}
         id="emailInput"
+        name="email"
       />
 
       <TextField
@@ -41,6 +43,7 @@ export default function SignupPage(): React.ReactElement {
         sx={{marginY: 1}}
         helperText={t("signup.textField.password.helper")}
         id="passwordInput"
+        name="password"
       />
 
       <TextField
@@ -51,6 +54,7 @@ export default function SignupPage(): React.ReactElement {
         sx={{marginY: 1}}
         helperText={t("signup.textField.repassword.helper")}
         id="retypePasswordInput"
+        name="repassword"
       />
 
       <Button variant="contained" sx={{fontSize: "large"}} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
