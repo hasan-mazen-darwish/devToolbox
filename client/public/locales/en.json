@@ -37,6 +37,10 @@
     },
     "githubText": "Github",
     "googleText": "Google",
-    "signupText": "Sign up"
+    "signupText": "Sign up",
+    "createdAccountMessage": "Account created successfully! please verify your E-mail via the link we sent you!"
+  },
+  "error": {
+    "general": "An error occured, please try later."
   }
 }
