@@ -5,33 +5,50 @@ import GoogleIcon from '@mui/icons-material/Google'
 import { useTranslation } from "react-i18next"
 import useApi from "../lib/hooks/useApi"
 import toast from "react-hot-toast"
+import type { ApiResponseErrorType } from "../../../shared/types/responses"
 
 export default function SignupPage(): React.ReactElement {
   const { t } = useTranslation()
-
-  const { post, loading: signupLoading, error } = useApi()
+  const { post, loading } = useApi()
 
   async function submitSignupFunction(event: React.SyntheticEvent) {
     event.preventDefault()
-    const form =  event.currentTarget as HTMLFormElement
+    const form = event.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
-    const name = formData.get("name")
-    const email = formData.get("email")
-    const password = formData.get("password")
-    const repassword = formData.get("repassword")
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+    const repassword = formData.get("repassword") as string
 
-    if(!signupLoading) {
-      const response = await post("/authentication/signup", {name, email, password, repassword})
-      if(error || !response) {
-        console.error(`Error handling signup; ${error ? error.message : "No response."}`)
+    const { data, error } = await post("/authentication/signup", {
+      name,
+      email,
+      password,
+      repassword
+    })
+
+    if (error) {
+      console.error("Error handling signup:", error.message)
+      
+      // Get error response from the server
+      const errorResponse = error.response?.data as ApiResponseErrorType
+      
+      if (errorResponse?.errorCode) {
+        toast.error(t("error.signup.email." + errorResponse.errorCode))
+      } else {
         toast.error(t("error.general"))
+        console.error("An error occurred in signing up:", error)
       }
-      else {
-        if(response.error) toast.error(t("error.signup.email." + response.errorCode))
-          else toast.success(t("signup.createdAccountMessage"))
-      }
+      return
     }
+
+    if (data && 'error' in data && data.error) {
+      toast.error(t("error.signup.email." + data.error))
+      return
+    }
+
+    toast.success(t("signup.createdAccountMessage"))
   }
 
   return <Container>
@@ -88,7 +105,7 @@ export default function SignupPage(): React.ReactElement {
         key={4}
       />
 
-      <Button type="submit" variant="contained" sx={{fontSize: "large"}} loading={signupLoading} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
+      <Button type="submit" variant="contained" sx={{fontSize: "large"}} loading={loading} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
     </form>
 
     <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
