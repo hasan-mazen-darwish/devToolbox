@@ -4,6 +4,7 @@ import { stringer } from "../libs/utils"
 import validator from "validator"
 import { errorResponser, invalidInputResponser, responser } from "../libs/routeFunctions/responser"
 import verifyToken from "../libs/turnstile"
+import sendEmail from "../libs/emailer"
 
 const route = express.Router()
 
@@ -62,11 +63,53 @@ route.post("/signup", async (req, res) => {
     status: Number(signupError.status || 400)
   })
   
-  // If the user is successfully created, send the client an OK response so he tells the user to login back again
-  else return responser(res, {
-    error: false,
-    status: 200
-  })
+  // If the user is successfully created, send the client an OK response so he tells the user to login back again after verifying the email.
+  else {
+    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+      email: sanitizedEmail,
+      type: "signup",
+      password: sanitizedPassword,
+      options: {
+        redirectTo: "http://localhost:5173/auth/callback"
+      }
+    })
+
+    if(linkError) return errorResponser(res, {
+      errorCode: "emailVerificationFailed",
+      status: 502
+    })
+
+    const verificationLink = linkData.properties.action_link
+
+    const emailSent = await sendEmail(
+      sanitizedEmail,
+      `
+        <h1>Welcome ${sanitizedName || 'to our app'}!</h1>
+        <p>Thanks for signing up. Please verify your email to get started:</p>
+        <a href="${verificationLink}" style="display:inline-block;padding:12px 24px;background:#4CAF50;color:white;text-decoration:none;border-radius:4px;">
+          Verify Email
+        </a>
+        <p>If the button doesn't work, copy this link:</p>
+        <p style="word-break:break-all;">${verificationLink}</p>
+        <p>This link expires in 24 hours.</p>
+        <p>If you didn't sign up, ignore this email.</p>
+      `,
+      "Verify Your Email"
+    )
+
+    if (!emailSent) {
+      console.error(`Failed to send verification email to ${sanitizedEmail}`)
+      return errorResponser(res, {
+        errorCode: "emailVerificationFailed",
+        status: 502
+      })
+    }
+
+    return responser(res, {
+      error: false,
+      status: 200
+    })
+  }
 })
 
 export default route
