@@ -3,11 +3,24 @@ import supabase from "../libs/supabase"
 import { stringer } from "../libs/utils"
 import validator from "validator"
 import { errorResponser, invalidInputResponser, responser } from "../libs/routeFunctions/responser"
+import verifyToken from "../libs/turnstile"
 
 const route = express.Router()
 
 route.post("/signup", async (req, res) => {
-  const { name, email, password, repassword } = req.body
+  const { name, email, password, repassword, turnstileToken } = req.body
+
+  const token = stringer(turnstileToken, {
+    acceptNumbers: true,
+    htmlSanitize: false,
+    maximumCap: Infinity,
+    returnNullIfResultIsEmpty: true,
+    trimmed: false
+  })
+  if(!token) return invalidInputResponser(res, {errorCode: "noToken"})
+  
+  const tokenVerified = await verifyToken(token, req)
+  if(tokenVerified.error) return invalidInputResponser(res, {errorCode: "tokenInvalid"})
   
   const sanitizedName = stringer(name, {maximumCap: 100}) || ""
   if(sanitizedName.length < 3) return invalidInputResponser(res, {errorCode: "nameTooShort"})
