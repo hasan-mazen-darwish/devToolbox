@@ -111,14 +111,8 @@ export default function SignupPage(): React.ReactElement {
       <Button type="submit" variant="contained" sx={{fontSize: "large"}} loading={loading} fullWidth id="signupButton">{t("signup.signupText")}!</Button>
     </form>
 
-    <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
-
-    <center>
-      <ButtonGroup variant="contained">
-        <Button key={1} sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>{t("signup.githubText")}</Button>
-        <Button key={2} sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
-      </ButtonGroup>
-    </center>
+    <br />
+    <br />
 
     {/* Cloudflare's Turnstile */}
     <Turnstile
@@ -127,5 +121,14 @@ export default function SignupPage(): React.ReactElement {
       onExpire={() => setToken(null)}
       onError={() => toast.error(t("error.general"))}
     />
+
+    <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
+
+    <center>
+      <ButtonGroup variant="contained">
+        <Button key={1} sx={{color: "white", fontSize: "large", backgroundColor: "black"}} startIcon={<GitHubIcon />}>{t("signup.githubText")}</Button>
+        <Button key={2} sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
+      </ButtonGroup>
+    </center>
   </Container>
 }
