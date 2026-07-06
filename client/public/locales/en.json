@@ -55,6 +55,7 @@
         "passwordsDontMatch": "The password and it's repeat must match but it isn't.",
         "noToken": "Unauthorized Access. Hacking attempt or bot detected.",
         "tokenInvalid": "Unauthorized Access. Hacking attempt or bot detected.",
+        "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support.",
         "supabase_createUser": {
           "anonymous_provider_disabled": "We do not support anonymous signups.",
           "bad_code_verifier": "Error implementing client side code. Please contact support.",
