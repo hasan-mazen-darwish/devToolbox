@@ -1,15 +1,17 @@
 import { Button, ButtonGroup, Container, Divider, TextField } from "@mui/material"
-import React from "react"
+import React, { useState } from "react"
 import GitHubIcon from '@mui/icons-material/GitHub'
 import GoogleIcon from '@mui/icons-material/Google'
 import { useTranslation } from "react-i18next"
 import useApi from "../lib/hooks/useApi"
 import toast from "react-hot-toast"
 import type { ApiResponseErrorType } from "../../../shared/types/responses"
+import { Turnstile } from "@marsidev/react-turnstile"
 
 export default function SignupPage(): React.ReactElement {
   const { t } = useTranslation()
   const { post, loading } = useApi()
+  const [token, setToken] = useState<string | null>(null)
 
   async function submitSignupFunction(event: React.SyntheticEvent) {
     event.preventDefault()
@@ -25,7 +27,8 @@ export default function SignupPage(): React.ReactElement {
       name,
       email,
       password,
-      repassword
+      repassword,
+      turnstileToken: token
     })
 
     if (error) {
@@ -116,5 +119,13 @@ export default function SignupPage(): React.ReactElement {
         <Button key={2} sx={{color: "white", fontSize: "large", backgroundColor: "darkcyan"}} startIcon={<GoogleIcon />}>{t("signup.googleText")}</Button>
       </ButtonGroup>
     </center>
+
+    {/* Cloudflare's Turnstile */}
+    <Turnstile
+      siteKey="0x4AAAAAADv5n--RFDmsSatM"
+      onSuccess={(token) => setToken(token)}
+      onExpire={() => setToken(null)}
+      onError={() => toast.error(t("error.general"))}
+    />
   </Container>
 }
