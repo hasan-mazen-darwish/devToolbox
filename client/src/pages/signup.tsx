@@ -1,20 +1,32 @@
 import { Button, ButtonGroup, Container, Divider, TextField } from "@mui/material"
-import React, { useState } from "react"
+import React, { useCallback, useRef, useState } from "react"
 import GitHubIcon from '@mui/icons-material/GitHub'
 import GoogleIcon from '@mui/icons-material/Google'
 import { useTranslation } from "react-i18next"
 import useApi from "../lib/hooks/useApi"
 import toast from "react-hot-toast"
 import type { ApiResponseErrorType } from "../../../shared/types/responses"
-import { Turnstile } from "@marsidev/react-turnstile"
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
 
 export default function SignupPage(): React.ReactElement {
   const { t } = useTranslation()
   const { post, loading } = useApi()
   const [token, setToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
+  const resetTurnstile = useCallback(() => {
+    turnstileRef.current?.reset()
+    setToken(null)
+  }, [])
 
   async function submitSignupFunction(event: React.SyntheticEvent) {
     event.preventDefault()
+    if(loading) return
+
+    if(!token) {
+      toast.error(t("error.signup.email.noToken"))
+      return
+    }
+
     const form = event.currentTarget as HTMLFormElement
     const formData = new FormData(form)
 
@@ -30,6 +42,8 @@ export default function SignupPage(): React.ReactElement {
       repassword,
       turnstileToken: token
     })
+
+    resetTurnstile()
 
     if (error) {
       console.error("Error handling signup:", error.message)
@@ -120,6 +134,7 @@ export default function SignupPage(): React.ReactElement {
       onSuccess={(token) => setToken(token)}
       onExpire={() => setToken(null)}
       onError={() => toast.error(t("error.general"))}
+      ref={turnstileRef}
     />
 
     <Divider sx={{marginY: 4, fontStyle: "italic"}}>{t("signup.divider.or")}</Divider>
