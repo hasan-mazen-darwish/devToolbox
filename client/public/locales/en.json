@@ -53,8 +53,8 @@
         "passwordWeak": "Your password is weak. It must contain at least one uppercase letter, one lowercase letter, one number and one special character.",
         "repasswordNotProvided": "You must fill the password repeating field.",
         "passwordsDontMatch": "The password and it's repeat must match but it isn't.",
-        "noToken": "Unauthorized Access. Hacking attempt or bot detected.",
-        "tokenInvalid": "Unauthorized Access. Hacking attempt or bot detected.",
+        "noToken": "Please complete the captcha (or wait for the page to load)",
+        "tokenInvalid": "Please complete the captcha (or wait for the page to load)",
         "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support.",
         "supabase_createUser": {
           "anonymous_provider_disabled": "We do not support anonymous signups.",
