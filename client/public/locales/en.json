@@ -40,6 +40,10 @@
     "signupText": "Sign up",
     "createdAccountMessage": "Account created successfully! please verify your E-mail via the link we sent you!"
   },
+  "verification": {
+    "failure": "E-mail verification failed. Please request another one.",
+    "sucess": "E-mail verification Succeed. Please log in."
+  },
   "error": {
     "general": "An error occured, please try later.",
     "signup": {

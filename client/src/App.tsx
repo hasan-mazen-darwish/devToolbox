@@ -66,6 +66,7 @@ function App() {
           <Route path="/">
             <Route index element={<></>}></Route>
             <Route path="signup/" element={<SignupPage />}></Route>
+            <Route path="verification-status/" element={<></>}></Route>
           </Route>
           <Route path="*"></Route>
         </Routes>
