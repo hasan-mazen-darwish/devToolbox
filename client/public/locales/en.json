@@ -42,7 +42,7 @@
   },
   "verification": {
     "failure": "E-mail verification failed. Please request another one.",
-    "sucess": "E-mail verification Succeed. Please log in."
+    "success": "E-mail verification Succeed. Please log in."
   },
   "error": {
     "general": "An error occured, please try later.",

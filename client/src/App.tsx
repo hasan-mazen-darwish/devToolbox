@@ -9,6 +9,7 @@ import { useEffect, useMemo } from "react"
 import rtlPlugin from "@mui/stylis-plugin-rtl"
 import createCache from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
+import VerificationStatus from "./pages/verificationStatus"
 
 function App() {
   const { i18n } = useTranslation()
@@ -66,7 +67,7 @@ function App() {
           <Route path="/">
             <Route index element={<></>}></Route>
             <Route path="signup/" element={<SignupPage />}></Route>
-            <Route path="verification-status/" element={<></>}></Route>
+            <Route path="verification-status/" element={<VerificationStatus />}></Route>
           </Route>
           <Route path="*"></Route>
         </Routes>

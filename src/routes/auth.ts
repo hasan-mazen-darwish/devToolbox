@@ -72,7 +72,7 @@ route.post("/signup", async (req, res) => {
         type: "signup",
         password: sanitizedPassword,
         options: {
-          redirectTo: `http://localhost:${process.env.PORT!}/auth/callback`
+          redirectTo: `http://localhost:${process.env.PORT!}/authentication/callback`
         }
       })
 
@@ -96,7 +96,8 @@ route.post("/signup", async (req, res) => {
           <p>This link expires in 24 hours.</p>
           <p>If you didn't sign up, ignore this email.</p>
         `,
-        "Verify Your Email"
+        "Verify Your Email",
+        sanitizedName
       )
 
       if (!emailSent) {
@@ -120,12 +121,12 @@ route.get("/callback", async (req, res) => {
     const { token } = req.query
     const baseUrl = "http://localhost:5173/verification-status"
 
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       token_hash: token as string,
       type: "email"
     })
 
-    if(error) return res.redirect(`${baseUrl}?error=true`)
+    if(error && !data) return res.redirect(`${baseUrl}?error=true`)
       else return res.redirect(`${baseUrl}?error=false`)
   }, req, res)
 })
