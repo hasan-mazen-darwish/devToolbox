@@ -2,6 +2,7 @@ import { createClient } from "redis"
 import { rateLimit, type RateLimitRequestHandler, type Options } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import { Request } from "express"
+import { errorResponser } from "./routeFunctions/responser"
 
 const redisClient = createClient()
 await redisClient.connect()
@@ -41,7 +42,9 @@ export function createLimiter(
     standardHeaders: true,
     windowMs,
     max,
-    keyGenerator: keyExtractors[type]
+    keyGenerator: keyExtractors[type],
+    handler: (_request, response) => errorResponser(response, {errorCode: "error.rateLimitExceeded", status: 429}),
+    statusCode: 429
   }
 
   return rateLimit(options)
