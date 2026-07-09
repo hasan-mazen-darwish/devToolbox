@@ -6,8 +6,12 @@ import { errorResponser, invalidInputResponser, responser } from "../libs/routeF
 import verifyToken from "../libs/turnstile"
 import sendEmail from "../libs/emailer"
 import routeFunctionWrapper from "../libs/routeFunctions/routeWrapper"
+import { createLimiter } from "../libs/rateLimiter"
 
 const route = express.Router()
+const authLimiter = createLimiter(60 * 1000, 20, "ip")
+
+route.use(authLimiter)
 
 route.post("/signup", async (req, res) => {
   routeFunctionWrapper(async () => {
