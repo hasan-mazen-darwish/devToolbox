@@ -4,7 +4,7 @@
   "description": "The Toolbox every programmer needs",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently -n \"Backend, Frontend\" -c \"red, blue\" \"nodemon --exec tsx src/server.ts --ignore ./client\" \"cd ./client && pnpm dev\"",
+    "dev": "concurrently -n \"Backend, Frontend, Redis\" -c \"red, green, blue\" \"nodemon --exec tsx src/server.ts --ignore ./client\" \"cd ./client && pnpm dev\" \"redis-server\"",
     "build": "tsc"
   },
   "type": "module",
