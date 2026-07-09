@@ -46,6 +46,7 @@
   },
   "error": {
     "general": "An error occured, please try later.",
+    "rateLimitExceeded": "Too many requests. Please try again in a moment.",
     "signup": {
       "email": {
         "nameTooShort": "The provided name must be at least three characters long.",
