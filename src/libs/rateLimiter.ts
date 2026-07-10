@@ -1,5 +1,5 @@
 import { createClient } from "redis"
-import { rateLimit, type RateLimitRequestHandler, type Options } from "express-rate-limit"
+import { rateLimit, type RateLimitRequestHandler, type Options, ipKeyGenerator } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import { Request } from "express"
 import { errorResponser } from "./routeFunctions/responser"
@@ -24,7 +24,8 @@ const keyExtractors = {
   },
   "ip": (req: Request) => {
     const ip = req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
-    return `ip:${Array.isArray(ip) ? ip[0] : ip}`;
+    const ipString:string = Array.isArray(ip) ? ip[0] : ip!
+    return `ip:${ipKeyGenerator(ipString)}`;
   }
 }
 
