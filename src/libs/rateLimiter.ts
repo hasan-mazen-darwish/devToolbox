@@ -32,12 +32,13 @@ const keyExtractors = {
 export function createLimiter(
   windowMs: number = 60 * 1000,
   max: number = 1,
-  type: LimiterType = "ip"
+  type: LimiterType = "ip",
+  scope: string = "cooldown"
 ): RateLimitRequestHandler {
   const options: Partial<Options> = {
     store: new RedisStore({
       sendCommand: (...args: any[]) => redisClient.sendCommand(args),
-      prefix: "saas:ratelimit:"
+      prefix: `saas:ratelimit:${scope}`
     }),
     legacyHeaders: false,
     standardHeaders: true,
