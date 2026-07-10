@@ -98,7 +98,7 @@ route.post("/signup", async (req, res) => {
           <p>If the button doesn't work, copy this link:</p>
           <p style="word-break:break-all;">${verificationLink}</p>
           <p>This link expires in 24 hours.</p>
-          <p>If you didn't sign up, ignore this email.</p>
+          <p>If you didn't sign up, ignore twhat if I add a random string generatorhis email.</p>
         `,
         "Verify Your Email",
         sanitizedName
@@ -134,5 +134,7 @@ route.get("/callback", async (req, res) => {
       else return res.redirect(`${baseUrl}?error=false`)
   }, req, res)
 })
+
+route.post("/resend-verification", createLimiter())
 
 export default route
