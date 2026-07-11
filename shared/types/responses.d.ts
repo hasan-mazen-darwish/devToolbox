@@ -1,9 +1,11 @@
-export type ApiResponseErrorType = {
+export type ApiResponseErrorType<T = any> = {
   error: true,
   errorCode: string,
-  data?: any
+  data?: T
 }
 
-export type ApiResponseType = {data?: any} & {
+export type ApiResponseType<Y=any, T = any> = {data?: Y} & {
   error: false,
-} | ApiResponseErrorType
+} | ApiResponseErrorType<T>
+
+export interface ApiRateLimitData {}
