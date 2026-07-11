@@ -1,6 +1,7 @@
 export type ApiResponseErrorType = {
   error: true,
-  errorCode: string
+  errorCode: string,
+  data?: any
 }
 
 export type ApiResponseType = {
