@@ -4,7 +4,6 @@ export type ApiResponseErrorType = {
   data?: any
 }
 
-export type ApiResponseType = {
+export type ApiResponseType = {data?: any} & {
   error: false,
-  data?: any
 } | ApiResponseErrorType

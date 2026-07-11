@@ -23,7 +23,8 @@ export async function invalidInputResponser(res: Response, config: Omit<ErrorRes
   return responser(res, {
     error: true,
     errorCode: config.errorCode,
-    status: 400
+    status: 400,
+    data: config.data
   })
 }
 
@@ -31,7 +32,8 @@ export async function errorResponser(res: Response, config: ErrorResponserConfig
   return responser(res, {
     error: true,
     errorCode: config.errorCode,
-    status: config.status
+    status: config.status,
+    data: config.data
   })
 }
 
