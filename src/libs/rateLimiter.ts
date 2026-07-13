@@ -54,7 +54,7 @@ export function createLimiter(
       const unit: ApiRateLimitData["unit"] = Math.round(remaining/times.minute) ? "minute"
                                            : Math.round(remaining/times.second) ? "second"
                                            : "millisecond"
-      return errorResponser<ApiRateLimitData>(response, {errorCode: "error.rateLimitExceeded", status: 429, data: {
+      return errorResponser<ApiRateLimitData>(response, {errorCode: "rateLimitExceeded", status: 429, data: {
         remaining,
         unit
       }})
