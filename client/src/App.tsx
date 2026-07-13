@@ -10,6 +10,7 @@ import rtlPlugin from "@mui/stylis-plugin-rtl"
 import createCache from "@emotion/cache"
 import { CacheProvider } from "@emotion/react"
 import VerificationStatus from "./pages/verificationStatus"
+import EmailSent from "./pages/EmailSent"
 
 function App() {
   const { i18n } = useTranslation()
@@ -68,6 +69,7 @@ function App() {
             <Route index element={<></>}></Route>
             <Route path="signup/" element={<SignupPage />}></Route>
             <Route path="verification-status/" element={<VerificationStatus />}></Route>
+            <Route path="email-sent/" element={<EmailSent />}></Route>
           </Route>
           <Route path="*"></Route>
         </Routes>
