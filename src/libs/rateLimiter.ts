@@ -1,8 +1,10 @@
 import { createClient } from "redis"
-import { rateLimit, type RateLimitRequestHandler, type Options, ipKeyGenerator } from "express-rate-limit"
+import { rateLimit, type RateLimitRequestHandler, type Options, type AugmentedRequest, ipKeyGenerator } from "express-rate-limit"
 import { RedisStore } from "rate-limit-redis"
 import { Request } from "express"
 import { errorResponser } from "./routeFunctions/responser"
+import type { ApiRateLimitData } from "../../shared/types/responses"
+import { times } from "./constants"
 
 const redisClient = createClient()
 await redisClient.connect()
@@ -45,7 +47,18 @@ export function createLimiter(
     windowMs,
     max,
     keyGenerator: keyExtractors[type],
-    handler: (_request, response) => errorResponser(response, {errorCode: "error.rateLimitExceeded", status: 429}),
+    handler: (request, response) => {
+      const { resetTime } = (request as AugmentedRequest).rateLimit
+      const now = Date.now()
+      const remaining = (resetTime?.getTime() || now) - now
+      const unit: ApiRateLimitData["unit"] = Math.round(remaining/times.minute) ? "minute"
+                                           : Math.round(remaining/times.second) ? "second"
+                                           : "millisecond"
+      return errorResponser<ApiRateLimitData>(response, {errorCode: "error.rateLimitExceeded", status: 429, data: {
+        remaining,
+        unit
+      }})
+    },
     statusCode: 429
   }
 
