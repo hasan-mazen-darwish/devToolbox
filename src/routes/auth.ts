@@ -8,6 +8,7 @@ import sendEmail from "../libs/emailer"
 import routeFunctionWrapper from "../libs/routeFunctions/routeWrapper"
 import { createLimiter } from "../libs/rateLimiter"
 import {times} from "../libs/constants"
+import { createClient } from "@supabase/supabase-js"
 
 const route = express.Router()
 const authLimiter = createLimiter(60 * 1000, 20, "ip")
@@ -148,6 +149,7 @@ route.post("/resend-verification", createLimiter(times.hour, 5, "email", "hourly
 
     const newPassword = stringer(password, {acceptNumbers: true, htmlSanitize: true, maximumCap: 100, returnNullIfResultIsEmpty: true, trimmed: true})
     if(!newPassword) return invalidInputResponser(res, {errorCode: "passwordNotFound"})
+    
 
     const token = stringer(turnstileToken, {
       acceptNumbers: true,
@@ -160,6 +162,19 @@ route.post("/resend-verification", createLimiter(times.hour, 5, "email", "hourly
     
     const tokenVerified = await verifyToken(token, req)
     if(tokenVerified.error) return invalidInputResponser(res, {errorCode: "tokenInvalid"})
+
+    
+    const verificationClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    })
+    const { data: testSigninData, error: testSigninError } = await verificationClient.auth.signInWithPassword({
+      email: newEmail,
+      password: newPassword
+    })
+    if(testSigninError) return invalidInputResponser(res, {errorCode: "wrongPassword"})
 
     const { data: userUUID, error } = await supabase.rpc("get_user_uuid_by_email", {email_text: newEmail})
     if(error) throw error
