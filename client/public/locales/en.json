@@ -61,6 +61,7 @@
         "noToken": "Please complete the captcha (or wait for the page to load)",
         "tokenInvalid": "Please complete the captcha (or wait for the page to load)",
         "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support.",
+        "disposableDomainNotAllowed": "Disposable E-mails are not allowed. Please use a regular one.",
         "supabase_createUser": {
           "anonymous_provider_disabled": "We do not support anonymous signups.",
           "bad_code_verifier": "Error implementing client side code. Please contact support.",
@@ -150,6 +151,17 @@
           "weak_password": "Your password is too weak. Please choose a stronger password."
         }
       }
+    },
+    "emailVerification": {
+        "emailNotProvided": "You must provide your E-mail address.",
+        "emailNotValid": "Your E-mail is not valid. Please provide a valid one.",
+        "passwordNotProvided": "You must provide the E-mail password.",
+        "disposableDomainNotAllowed": "Disposable E-mails are not allowed. Please use a regular one.",
+        "noToken": "Please complete the captcha (or wait for the page to load)",
+        "tokenInvalid": "Please complete the captcha (or wait for the page to load)",
+        "wrongPassword": "Wrong password for the E-mail. Please don't change the credentials you used.",
+        "emailAlreadyVerified": "This E-mail is already verified! No need for another E-mail verification.",
+        "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support."
     }
   }
 }

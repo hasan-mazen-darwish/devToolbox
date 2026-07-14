@@ -148,7 +148,7 @@ route.post("/resend-verification", createLimiter(times.hour, 5, "email", "hourly
     if(typeof newEmail == "object") return newEmail.response
 
     const newPassword = stringer(password, {acceptNumbers: true, htmlSanitize: true, maximumCap: 100, returnNullIfResultIsEmpty: true, trimmed: true})
-    if(!newPassword) return invalidInputResponser(res, {errorCode: "passwordNotFound"})
+    if(!newPassword) return invalidInputResponser(res, {errorCode: "passwordNotProvided"})
     
 
     const token = stringer(turnstileToken, {
