@@ -141,12 +141,25 @@ route.get("/callback", async (req, res) => {
 
 route.post("/resend-verification", createLimiter(times.hour, 5, "email", "hourly_rate"), createLimiter(times.minute * 5, 1, "email", "standard_cooldown"), async (req, res) => {
   routeFunctionWrapper(async () => {
-    const { email, password } = req.body
+    const { email, password, turnstileToken } = req.body
+
     const newEmail = await getEmailSanitized(email, res)
     if(typeof newEmail == "object") return newEmail.response
 
     const newPassword = stringer(password, {acceptNumbers: true, htmlSanitize: true, maximumCap: 100, returnNullIfResultIsEmpty: true, trimmed: true})
     if(!newPassword) return invalidInputResponser(res, {errorCode: "passwordNotFound"})
+
+    const token = stringer(turnstileToken, {
+      acceptNumbers: true,
+      htmlSanitize: false,
+      maximumCap: Infinity,
+      returnNullIfResultIsEmpty: true,
+      trimmed: false
+    })
+    if(!token) return invalidInputResponser(res, {errorCode: "noToken"})
+    
+    const tokenVerified = await verifyToken(token, req)
+    if(tokenVerified.error) return invalidInputResponser(res, {errorCode: "tokenInvalid"})
 
     const { data: userUUID, error } = await supabase.rpc("get_user_uuid_by_email", {email_text: newEmail})
     if(error) throw error
