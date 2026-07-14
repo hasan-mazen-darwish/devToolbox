@@ -14,6 +14,9 @@ importers:
       cors:
         specifier: ^2.8.6
         version: 2.8.6
+      disposable-email-domains:
+        specifier: ^1.0.62
+        version: 1.0.62
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -1156,6 +1159,9 @@ packages:
 
   devtools-protocol@0.0.1624250:
     resolution: {integrity: sha512-YFAat/lOiIk0ARmBweG+ygrEcbZrq5B9urRyUoeQKp53MlidHXE2TmTbxKcaXoQj7u/aX+jebDO4BW55rs0WwA==}
+
+  disposable-email-domains@1.0.62:
+    resolution: {integrity: sha512-LBQvhRw7mznQTPoyZbsmYeNOZt1pN5aCsx4BAU/3siVFuiM9f2oyKzUaB8v1jbxFjE3aYqYiMo63kAL4pHgfWQ==}
 
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
@@ -3169,6 +3175,8 @@ snapshots:
   detect-libc@2.1.2: {}
 
   devtools-protocol@0.0.1624250: {}
+
+  disposable-email-domains@1.0.62: {}
 
   dom-helpers@5.2.1:
     dependencies:

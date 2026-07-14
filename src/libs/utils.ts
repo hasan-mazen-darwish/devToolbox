@@ -1,4 +1,8 @@
+import type { Response } from "express"
 import sanitizeHtml from "sanitize-html"
+import { invalidInputResponser } from "./routeFunctions/responser"
+import validator from "validator"
+import disposableDomains from "disposable-email-domains"
 
 interface StringerOptions {
   htmlSanitize?: boolean,
@@ -33,4 +37,30 @@ export function stringer(value: any, options: StringerOptions = {
 export function numberer(value: any): number | null {
   if(isNaN(Number(value))) return null
   else return Number(value)
+}
+
+type GetEmailSanitizedObject = {error: true, response: Response}
+export async function getEmailSanitized(email: string, res: Response): Promise<string | GetEmailSanitizedObject> {
+  const returning = stringer(email, {
+    acceptNumbers: false, // Can't provide a string like "1"
+    htmlSanitize: true,
+    maximumCap: 254,
+    returnNullIfResultIsEmpty: true,
+    trimmed: true
+  })
+
+  const errorResponse = async (errorCode: string) => ({
+    error: true,
+    response: await invalidInputResponser(res, {errorCode})
+  } as GetEmailSanitizedObject)
+
+  if(!returning) return await errorResponse("emailNotProvided")
+  if(!validator.isEmail(returning)) return await errorResponse("emailNotValid")
+
+  const [local, domain] = returning.toLowerCase().split("@")
+  if(disposableDomains.includes(domain)) return await errorResponse("disposableDomainNotAllowed")
+
+  // Normalizing the E-mail:
+  const newEmail = `${local.split("+")[0].replaceAll(".", "")}@${domain}`
+  return newEmail
 }
