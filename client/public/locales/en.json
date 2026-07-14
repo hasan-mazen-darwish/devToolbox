@@ -41,8 +41,12 @@
     "createdAccountMessage": "Account created successfully! please verify your E-mail via the link we sent you!"
   },
   "verification": {
-    "failure": "E-mail verification failed. Please request another one.",
-    "success": "E-mail verification Succeed. Please log in."
+    "emailSent": "E-mail verification sent!",
+    "checkInbox": "E-mail verification sent! Please check your inbox for any incoming E-mails! (Check the spam folder if the main inbox contained nothing)",
+    "emailNotSent": "If you didn't receive any E-mail (check the spam folder!), you can have your E-mail resent by clicking here:",
+    "resendEmailButton": "Resend E-mail",
+    "rateLimitNote": "Please note that you can't resend an E-mail more than once each 5 minutes, at 5 times an hour max.",
+    "noRefreshWarning": "DISCLAIMER: Do NOT refresh the page! if you refresh the page, you have to enter your authentication data again in the login page!"
   },
   "error": {
     "general": "An error occured, please try later.",

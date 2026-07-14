@@ -1,6 +1,9 @@
 import { Button, Container } from "@mui/material"
+import { useTranslation } from "react-i18next"
 
 const EmailSent = () => {
+  const {t} = useTranslation()
+
   return <Container style={{fontSize: "20px"}}>
     <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center"}}>
       <img
@@ -10,16 +13,15 @@ const EmailSent = () => {
       />
     </div>
     
-    <center><h2>E-mail sent!</h2></center>
-    Please check your inbox (or in the spam folder) and click the verification link!
+    <center><h2>{t("verification.emailSent")}</h2></center>
+    <p>{t("verification.checkInbox")}</p>
+    <p>{t("verification.emailNotSent")}</p>
+    <Button fullWidth variant="contained">{t("verification.resendEmailButton")}</Button>
     <br />
 
-    If you didn't receive any E-mail (check the spam folder!), you can have your E-mail resent by clicking here:
+    <p>{t("verification.rateLimitNote")}</p>
     <br />
-    <Button fullWidth variant="contained">Resend E-mail</Button>
-    <br />
-
-    Please note that you can't resend an E-mail more than once each 5 minutes, at 5 times an hour max.
+    <p style={{color: "red"}}>{t("verification.noRefreshWarning")}</p>
   </Container>
 }
 
