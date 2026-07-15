@@ -31,6 +31,17 @@ const keyExtractors = {
   }
 }
 
+function getTimeWithUnit(time: number): ApiRateLimitData {
+  if(Math.floor(time/times.year) >= 1) return {remaining: Math.floor(time/times.year), unit: "year"}
+  else if(Math.floor(time/times.month) >= 1) return {remaining: Math.floor(time/times.month), unit: "month"}
+  else if(Math.floor(time/times.week) >= 1) return {remaining: Math.floor(time/times.week), unit: "week"}
+  else if(Math.floor(time/times.day) >= 1) return {remaining: Math.floor(time/times.day), unit: "day"}
+  else if(Math.floor(time/times.hour) >= 1) return {remaining: Math.floor(time/times.hour), unit: "hour"}
+  else if(Math.floor(time/times.minute) >= 1) return {remaining: Math.floor(time/times.minute), unit: "minute"}
+  else if(Math.floor(time/times.second) >= 1) return {remaining: Math.floor(time/times.second), unit: "second"}
+  else return {remaining: time, unit: "millisecond"}
+}
+
 export function createLimiter(
   windowMs: number = 60 * 1000,
   max: number = 1,
@@ -51,13 +62,7 @@ export function createLimiter(
       const { resetTime } = (request as AugmentedRequest).rateLimit
       const now = Date.now()
       const remaining = (resetTime?.getTime() || now) - now
-      const unit: ApiRateLimitData["unit"] = Math.round(remaining/times.minute) ? "minute"
-                                           : Math.round(remaining/times.second) ? "second"
-                                           : "millisecond"
-      return errorResponser<ApiRateLimitData>(response, {errorCode: "rateLimitExceeded", status: 429, data: {
-        remaining,
-        unit
-      }})
+      return errorResponser<ApiRateLimitData>(response, {errorCode: "rateLimitExceeded", status: 429, data: getTimeWithUnit(remaining)})
     },
     statusCode: 429
   }
