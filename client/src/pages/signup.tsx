@@ -130,7 +130,7 @@ export default function SignupPage(): React.ReactElement {
 
     {/* Cloudflare's Turnstile */}
     <Turnstile
-      siteKey="0x4AAAAAADv5n--RFDmsSatM"
+      siteKey={import.meta.env.VITE_CLOUDFLARE_SITE_KEY!}
       onSuccess={(token) => setToken(token)}
       onExpire={() => setToken(null)}
       onError={() => toast.error(t("error.general"))}
