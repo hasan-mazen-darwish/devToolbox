@@ -46,7 +46,9 @@
     "emailNotSent": "If you didn't receive any E-mail (check the spam folder!), you can have your E-mail resent by clicking here:",
     "resendEmailButton": "Resend E-mail",
     "rateLimitNote": "Please note that you can't resend an E-mail more than once each 5 minutes, at 5 times an hour max.",
-    "noRefreshWarning": "DISCLAIMER: Do NOT refresh the page! if you refresh the page, you have to enter your authentication data again in the login page!"
+    "noRefreshWarning": "DISCLAIMER: Do NOT refresh the page! if you refresh the page, you have to enter your authentication data again in the login page!",
+    "noState": "E-mail and password are not given from the previous page. You cannot resend the E-mail verification.",
+    "sentVerification": "Verification is resent successfully!"
   },
   "error": {
     "general": "An error occured, please try later.",
@@ -157,15 +159,37 @@
       }
     },
     "emailVerification": {
-        "emailNotProvided": "You must provide your E-mail address.",
-        "emailNotValid": "Your E-mail is not valid. Please provide a valid one.",
-        "passwordNotProvided": "You must provide the E-mail password.",
-        "disposableDomainNotAllowed": "Disposable E-mails are not allowed. Please use a regular one.",
-        "noToken": "Please complete the captcha (or wait for the page to load)",
-        "tokenInvalid": "Please complete the captcha (or wait for the page to load)",
-        "wrongPassword": "Wrong password for the E-mail. Please don't change the credentials you used.",
-        "emailAlreadyVerified": "This E-mail is already verified! No need for another E-mail verification.",
-        "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support."
+      "emailNotProvided": "You must provide your E-mail address.",
+      "emailNotValid": "Your E-mail is not valid. Please provide a valid one.",
+      "passwordNotProvided": "You must provide the E-mail password.",
+      "disposableDomainNotAllowed": "Disposable E-mails are not allowed. Please use a regular one.",
+      "noToken": "Please complete the captcha (or wait for the page to load)",
+      "tokenInvalid": "Please complete the captcha (or wait for the page to load)",
+      "wrongPassword": "Wrong password for the E-mail. Please don't change the credentials you used.",
+      "emailAlreadyVerified": "This E-mail is already verified! No need for another E-mail verification.",
+      "emailVerificationFailed": "Sending an E-mail verification failed. Please contact the support.",
+      "rateLimiting": {
+        "retryAfter": "E-mail verification is not available now. Retry after {{time}} {{unit}}.",
+        "retryAfter_plural": "E-mail verification is not available now. Retry after {{time}} {{unit}}."
+      }
     }
+  },
+  "timeUnit": {
+    "second": "second",
+    "second_plural": "seconds",
+    "millisecond": "millisecond",
+    "millisecond_plural": "milliseconds",
+    "minute": "minute",
+    "minute_plural": "minutes",
+    "hour": "hour",
+    "hour_plural": "hours",
+    "day": "day",
+    "day_plural": "days",
+    "week": "week",
+    "week_plural": "weeks",
+    "month": "month",
+    "month_plural": "months",
+    "year": "year",
+    "year_plural": "years"
   }
 }
