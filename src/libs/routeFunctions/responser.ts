@@ -13,7 +13,7 @@ export async function responser<T=any, Y=any>(res: Response, config: ResponserCo
   status: 200
 }): ReturnTypeInFunctions {
   const returnData: ApiResponseType<T, Y> = config.error ? 
-  {error: true, errorCode: (config as ApiResponseErrorType<T>).errorCode}
+  {error: true, errorCode: (config as ApiResponseErrorType<T>).errorCode, data: config.data}
   : {error: false, data: config.data}
 
   return res.status(config.status).json(returnData)

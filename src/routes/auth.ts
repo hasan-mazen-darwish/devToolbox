@@ -141,7 +141,7 @@ route.get("/callback", async (req, res) => {
 })
 
 route.post("/resend-verification",
-    createLimiter(times.day, 20, "email", "hourly_rate"),
+    createLimiter(times.day, 20, "email", "daily_rate"),
     createLimiter(times.hour, 5, "email", "hourly_rate"),
     createLimiter(times.minute * 5, 1, "email", "standard_cooldown"),
   async (req, res) => {
