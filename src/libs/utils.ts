@@ -3,6 +3,7 @@ import sanitizeHtml from "sanitize-html"
 import { invalidInputResponser } from "./routeFunctions/responser"
 import validator from "validator"
 import disposableDomains from "disposable-email-domains"
+import Crypto from "node:crypto"
 
 interface StringerOptions {
   htmlSanitize?: boolean,
@@ -44,7 +45,7 @@ export async function getEmailSanitized(email: string, res: Response): Promise<s
   const returning = stringer(email, {
     acceptNumbers: false, // Can't provide a string like "1"
     htmlSanitize: true,
-    maximumCap: 254,
+    maximumCap: 255,
     returnNullIfResultIsEmpty: true,
     trimmed: true
   })
@@ -63,4 +64,9 @@ export async function getEmailSanitized(email: string, res: Response): Promise<s
   // Normalizing the E-mail:
   const newEmail = `${local.split("+")[0].replaceAll(".", "")}@${domain}`
   return newEmail
+}
+
+export function generateToken(bytes: number): string {
+  const token = Crypto.randomBytes(bytes).toString("hex")
+  return token
 }

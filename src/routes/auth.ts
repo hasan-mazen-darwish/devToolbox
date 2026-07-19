@@ -1,6 +1,6 @@
 import express from "express"
 import supabase from "../libs/supabase"
-import { getEmailSanitized, stringer } from "../libs/utils"
+import { generateToken, getEmailSanitized, stringer } from "../libs/utils"
 import validator from "validator"
 import { errorResponser, internalServerError, invalidInputResponser, responser } from "../libs/routeFunctions/responser"
 import verifyToken from "../libs/turnstile"
@@ -9,6 +9,8 @@ import routeFunctionWrapper from "../libs/routeFunctions/routeWrapper"
 import { createLimiter } from "../libs/rateLimiter"
 import {times} from "../libs/constants"
 import bcrypt from "bcrypt"
+import redisInstance from "../libs/redisManager"
+import Crypto from "node:crypto"
 
 const route = express.Router()
 const authLimiter = createLimiter(60 * 1000, 20, "ip")
@@ -125,18 +127,40 @@ route.post("/signup", async (req, res) => {
   }, req, res)
 })
 
-route.get("/callback", async (req, res) => {
+route.get("/email-verfication-token-verify", async (req, res) => {
   routeFunctionWrapper(async () => {
-    const { token } = req.query
+    const { token, email } = req.query
     const baseUrl = "http://localhost:5173/verification-status"
+    const baseUrlGood = `${baseUrl}?error=false`
+    const baseUrlBad = `${baseUrl}?error=true`
 
-    const { data, error } = await supabase.auth.verifyOtp({
-      token_hash: token as string,
-      type: "email"
+    const newToken = stringer(token, {
+      acceptNumbers: false,
+      htmlSanitize: false,
+      trimmed: true,
+      maximumCap: 65,
+      returnNullIfResultIsEmpty: true
     })
 
-    if(error && !data) return res.redirect(`${baseUrl}?error=true`)
-      else return res.redirect(`${baseUrl}?error=false`)
+    const newEmail = stringer(email, {
+      acceptNumbers: false,
+      htmlSanitize: false,
+      trimmed: true,
+      maximumCap: 255,
+      returnNullIfResultIsEmpty: true
+    })
+
+    if(!newToken || !newEmail) return res.redirect(baseUrlBad)
+
+    await redisInstance.connect()
+    const emailOfToken = await redisInstance.emailVerifier("get", {token: newToken})
+    if(!emailOfToken || !emailOfToken.exists) return res.redirect(baseUrlBad)
+    if(!Crypto.timingSafeEqual(Buffer.from(emailOfToken.email), Buffer.from(newEmail))) return res.redirect(baseUrlBad)
+
+    const {error} = await supabase.rpc("auto_confirm_auth_user", {p_email: newEmail})
+    if(error) return res.redirect(baseUrlBad)
+    
+    return res.redirect(baseUrlGood)
   }, req, res)
 })
 
@@ -194,40 +218,31 @@ route.post("/resend-verification",
         if(user.confirmed_at) return invalid("emailAlreadyVerified")
         if(!user.identities?.some(identity => identity.provider == "email")) return invalid("emailAlreadyVerified")
 
-        // The real E-mail sending logic, Password is required by Supabase.
         else {
-          const { data: newLinkData, error: newLinkError } = await supabase.auth.admin.generateLink({
-            type: "signup",
-            email: newEmail,
-            password: newPassword,
-            options: {
-              redirectTo: `http://localhost:${process.env.PORT!}/authentication/callback`
-            }
-          })
-
-          if(newLinkError || !newLinkData) throw newLinkError
+          const verificationToken = generateToken(32)
+          const { data: userDataForName, error: errorOfName } = await supabase.from("users").select("name").eq("id", user.id).limit(1)
+          if(errorOfName) throw errorOfName
           else {
-            const verificationLink = newLinkData.properties.action_link
-            
-            // Getting the user name from the public schema:
-            const {data: publicData, error: publicDataError} = await supabase.from("users").select("name").eq("id", user.id).limit(1)
-            if(publicDataError) throw publicDataError
-            else {
-              const name = publicData[0]!.name
-              const emailSent = await sendEmail(newEmail, getEmailBody({verificationLink, sanitizedName: name}), "Verify your E-mail", name)
-              
-              if (!emailSent) {
-                console.error(`Failed to send verification email to ${newEmail}`)
-                return errorResponser(res, {
-                  errorCode: "emailVerificationFailed",
-                  status: 502
-                })
-              }
-              else return responser(res, {
-                error: false,
-                status: 200
+            const username = userDataForName[0].name as string
+            const isEmailSent = await sendEmail(
+              newEmail,
+              getEmailBody({sanitizedName: username, verificationLink: `http://localhost:${process.env.PORT}/authentication/email-verfication-token-verify?token=${verificationToken}&email=${newEmail}`}),
+              "Verify your E-mail",
+              username
+            )
+
+            if(!isEmailSent) {
+              console.error(`Failed to send verification email to ${newEmail}`)
+              return errorResponser(res, {
+                errorCode: "emailVerificationFailed",
+                status: 502
               })
             }
+            
+            await redisInstance.connect()
+            const redisTokenRegistered = await redisInstance.emailVerifier("set", {token: verificationToken, email: newEmail})
+            if(!redisTokenRegistered) throw new Error("Redis Token Unregistered")
+            return responser(res, {error: false, status: 200})
           }
         }
       }
