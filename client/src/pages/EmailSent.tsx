@@ -23,7 +23,7 @@ const EmailSent = () => {
     setToken(null)
   }, [turnstileRef.current])
 
-  const handleResetButton = useCallback(async () => {
+  const handleResetButton = async () => {
     if(loading) return
     else {
       const { data, error } = await post("/authentication/resend-verification", {email, password, turnstileToken: token})
@@ -36,9 +36,16 @@ const EmailSent = () => {
         const errorResponse = error.response?.data as ApiResponseErrorType<ApiRateLimitData>
         
         if (errorResponse?.errorCode == "rateLimitExceeded") {
-          const unitKey = `timeUnit.${errorResponse.data?.unit}`
-          const unitTranslation = t(unitKey, {count: errorResponse.data?.remaining})
-          toast.error(t(`error.emailVerification.rateLimiting`, {count: errorResponse.data?.remaining, unit: unitTranslation}))
+          const unit = errorResponse.data?.unit
+          const remaining = Number(errorResponse.data?.remaining)
+
+          const unitKey = `timeUnit.${unit}`
+          const unitTranslation = t(unitKey, {count: remaining})
+          const errorMessage = t(`error.emailVerification.rateLimiting.retryAfter`, {count: remaining, time: remaining, unit: unitTranslation})
+
+          toast.error(errorMessage)
+        } else if(error?.status == 500) {
+          toast.error(t("error.general"))
         } else if(errorResponse?.errorCode) {
           toast.error(t("error.emailVerification." + errorResponse.errorCode))
         } else {
@@ -55,7 +62,7 @@ const EmailSent = () => {
 
       toast.success(t("signup.createdAccountMessage"))
     }
-  }, [email, password, token, loading])
+  }
 
   return <Container style={{fontSize: "20px"}}>
     <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center"}}>

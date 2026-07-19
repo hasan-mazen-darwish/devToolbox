@@ -2,13 +2,13 @@ import express from "express"
 import supabase from "../libs/supabase"
 import { getEmailSanitized, stringer } from "../libs/utils"
 import validator from "validator"
-import { errorResponser, invalidInputResponser, responser } from "../libs/routeFunctions/responser"
+import { errorResponser, internalServerError, invalidInputResponser, responser } from "../libs/routeFunctions/responser"
 import verifyToken from "../libs/turnstile"
 import sendEmail from "../libs/emailer"
 import routeFunctionWrapper from "../libs/routeFunctions/routeWrapper"
 import { createLimiter } from "../libs/rateLimiter"
 import {times} from "../libs/constants"
-import { createClient } from "@supabase/supabase-js"
+import bcrypt from "bcrypt"
 
 const route = express.Router()
 const authLimiter = createLimiter(60 * 1000, 20, "ip")
@@ -148,11 +148,13 @@ route.post("/resend-verification",
   routeFunctionWrapper(async () => {
     const { email, password, turnstileToken } = req.body
 
+    const invalid = (errorCode: string) => invalidInputResponser(res, {errorCode})
+
     const newEmail = await getEmailSanitized(email, res)
     if(typeof newEmail == "object") return newEmail.response
 
     const newPassword = stringer(password, {acceptNumbers: true, htmlSanitize: true, maximumCap: 100, returnNullIfResultIsEmpty: true, trimmed: true})
-    if(!newPassword) return invalidInputResponser(res, {errorCode: "passwordNotProvided"})
+    if(!newPassword) return invalid("passwordNotProvided")
     
 
     const token = stringer(turnstileToken, {
@@ -162,36 +164,35 @@ route.post("/resend-verification",
       returnNullIfResultIsEmpty: true,
       trimmed: false
     })
-    if(!token) return invalidInputResponser(res, {errorCode: "noToken"})
+    if(!token) return invalid("noToken")
     
     const tokenVerified = await verifyToken(token, req)
-    if(tokenVerified.error) return invalidInputResponser(res, {errorCode: "tokenInvalid"})
-
+    if(tokenVerified.error) {console.log(tokenVerified.errorCode); return invalid("tokenInvalid")}
     
-    const verificationClient = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false
+    // Manually checking for the password:
+
+    const { data: encryptedPassword, error: userPasswordError } = await supabase.rpc("get_encrypted_password_by_email", {p_email: newEmail})
+    if(userPasswordError) {console.log(userPasswordError);return internalServerError(res)}
+      else {
+        if(!encryptedPassword) return internalServerError(res)
+          else {
+            const passwordMatches = await bcrypt.compare(newPassword, encryptedPassword)
+            if(!passwordMatches) return invalid("wrongPassword")
+          }
       }
-    })
-    const { data: testSigninData, error: testSigninError } = await verificationClient.auth.signInWithPassword({
-      email: newEmail,
-      password: newPassword
-    })
-    if(testSigninError) return invalidInputResponser(res, {errorCode: "wrongPassword"})
 
     const { data: userUUID, error } = await supabase.rpc("get_user_uuid_by_email", {email_text: newEmail})
     if(error) throw error
     else {
-      if(!userUUID) return invalidInputResponser(res, {errorCode: "emailNotFound"})
+      if(!userUUID) return invalid("emailNotFound")
 
       const { data: {user}, error: userError } = await supabase.auth.admin.getUserById(userUUID as string)
       if(userError) throw userError
       else {
-        if(!user) return invalidInputResponser(res, {errorCode: "emailNotFound"})
+        if(!user) return invalid("emailNotFound")
         
-        if(user.confirmed_at) return invalidInputResponser(res, {errorCode: "emailAlreadyVerified"})
-        if(!user.identities?.some(identity => identity.provider == "email")) return invalidInputResponser(res, {errorCode: "emailAlreadyVerified"})
+        if(user.confirmed_at) return invalid("emailAlreadyVerified")
+        if(!user.identities?.some(identity => identity.provider == "email")) return invalid("emailAlreadyVerified")
 
         // The real E-mail sending logic, Password is required by Supabase.
         else {

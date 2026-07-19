@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Container, Divider, TextField } from "@mui/material"
 import React, { useCallback, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import GitHubIcon from '@mui/icons-material/GitHub'
 import GoogleIcon from '@mui/icons-material/Google'
 import { useTranslation } from "react-i18next"
@@ -17,6 +18,7 @@ export default function SignupPage(): React.ReactElement {
     turnstileRef.current?.reset()
     setToken(null)
   }, [])
+  const navigate = useNavigate()
 
   async function submitSignupFunction(event: React.SyntheticEvent) {
     event.preventDefault()
@@ -51,7 +53,9 @@ export default function SignupPage(): React.ReactElement {
       // Get error response from the server
       const errorResponse = error.response?.data as ApiResponseErrorType
       
-      if (errorResponse?.errorCode) {
+      if(error?.status == 500) {
+        toast.error(t("error.general"))
+      } else if (errorResponse?.errorCode) {
         toast.error(t("error.signup.email." + errorResponse.errorCode))
       } else {
         toast.error(t("error.general"))
@@ -65,7 +69,11 @@ export default function SignupPage(): React.ReactElement {
       return
     }
 
-    toast.success(t("signup.createdAccountMessage"))
+    navigate("/email-sent", {
+      state: {email, password},
+      replace: true
+    })
+    // toast.success(t("signup.createdAccountMessage"))
   }
 
   return <Container>
