@@ -94,7 +94,7 @@ route.post("/signup", async (req, res) => {
       const verificationLink = getVerificationLink(verificationToken, sanitizedEmail)
       await redisInstance.connect()
 
-      const redisTokenResult = await redisInstance.emailVerifier("set", {token: verificationToken, email: sanitizedEmail})
+      const redisTokenResult = await redisInstance.emailSetter(sanitizedEmail, verificationToken)
 
       if(!redisTokenResult || !redisTokenResult.done) {
         return errorResponser(res, {
@@ -152,7 +152,7 @@ route.get("/email-verfication-token-verify", async (req, res) => {
     if(!newToken || !newEmail) return res.redirect(baseUrlBad)
 
     await redisInstance.connect()
-    const emailOfToken = await redisInstance.emailVerifier("get", {token: newToken})
+    const emailOfToken = await redisInstance.emailVerifier(newToken)
     if(!emailOfToken || !emailOfToken.exists) return res.redirect(baseUrlBad)
     if(!Crypto.timingSafeEqual(Buffer.from(emailOfToken.email), Buffer.from(newEmail))) return res.redirect(baseUrlBad)
 
@@ -241,7 +241,7 @@ route.post("/resend-verification",
             }
             
             await redisInstance.connect()
-            const redisTokenRegistered = await redisInstance.emailVerifier("set", {token: verificationToken, email: newEmail})
+            const redisTokenRegistered = await redisInstance.emailSetter(newEmail, verificationToken)
             if(!redisTokenRegistered || !redisTokenRegistered.done) throw new Error("Redis Token Unregistered")
             return responser(res, {error: false, status: 200})
           }

@@ -1,12 +1,13 @@
-import { createClient, type RedisClientType } from "redis"
+import { createClient, type SetOptions, type RedisClientType } from "redis"
 import { times } from "./constants"
+import Crypto from "crypto"
 
-type EmailVerifierGetCommandReturn = {
+type EmailVerifierReturn = {
   exists: true,
   email: string
 } | {exists: false}
 
-interface EmailVerifierSetCommandReturn {
+interface EmailSetterReturn {
   done: boolean
 }
 
@@ -14,6 +15,8 @@ class RedisManager {
   private clientPromise: Promise<RedisClientType>
   private client: undefined | RedisClientType
   private readonly maxRetries = 20
+  private readonly tokenKeyBase = "email_verification:token:"
+  private readonly emailKeyBase = "email_verification:email:"
   
   constructor() {
     this.clientPromise = this.returnClientPromise()
@@ -58,39 +61,59 @@ class RedisManager {
     })
   }
 
-  async emailVerifier(command: "set", {token, email}: {token: string, email: string}): Promise<EmailVerifierSetCommandReturn | false>
-  async emailVerifier(command: "get", {token}: {token: string}): Promise<EmailVerifierGetCommandReturn | false>
-  async emailVerifier(command: "get" | "set", {token, email}: {token: string, email: never | string}): Promise<EmailVerifierGetCommandReturn | EmailVerifierSetCommandReturn | false> {
-    return await this.wrapper<EmailVerifierGetCommandReturn | EmailVerifierSetCommandReturn | false>(
-      (error) => ({message: `error ${command}ting E-mail verifier for E-mail: ${email}, Token: ${token}. The error: \n ${error}`, return: false}),
-      async (token, email) => {
+  async emailVerifier(token: string): Promise<EmailVerifierReturn | false> {
+    return await this.wrapper<EmailVerifierReturn | false>(
+      error => ({message: `Error getting the E-mail from token (${token}): ${error}\n`, return: false}),
+      async (token) => {
         // Waiting for the client to fully load:
+        await this.connect()
+        if(!this.client) return false
+        else {
+          const key = this.tokenKeyBase + token
+
+          const response = await this.client.get(key)
+          if(!response) return {exists: false}
+          else {
+            const email = response
+            const emailResponse = await this.client.get(this.emailKeyBase + email)
+            if(!emailResponse) return false
+            else {
+              if(Crypto.timingSafeEqual(Buffer.from(token), Buffer.from(emailResponse))) return {email, exists: true}
+              else return false
+            }
+          }
+        }
+      },
+      token
+    )
+  }
+
+  async emailSetter(email: string, token: string): Promise<EmailSetterReturn | false> {
+    return await this.wrapper<EmailSetterReturn | false>(
+      error => ({message: `Error setting the E-mail ${email} for token (${token}): ${error}\n`, return: false}),
+      async (email: string, token: string) => {
+        // Waiting for the client to be fully loaded:
         await this.connect()
 
         if(!this.client) return false
         else {
-          const key = `email_verification:token:${token}`
-          switch(command) {
-            case "get":
-              const get_response = await this.client.get(key)
-              if(!get_response) return {exists: false} as EmailVerifierGetCommandReturn
-              else return {email: get_response, exists: true} as EmailVerifierGetCommandReturn
-            case "set":
-              const set_response = await this.client.set(key, email, {
-                expiration: {
-                  type: "PX",
-                  value: times.minute * 15
-                }
-              })
-
-              if(!set_response) return {done: false} as EmailVerifierSetCommandReturn
-              else return {done: true} as EmailVerifierSetCommandReturn
-            default:
-              return false
+          const emailToTokenKey = this.emailKeyBase + email
+          const tokenToEmailKey = this.tokenKeyBase + token
+          const expiration: SetOptions["expiration"] = {
+            type: "PX",
+            value: times.minute * 15
           }
+
+          const setEmailResponse = await this.client.set(emailToTokenKey, token, {expiration})
+          if(!setEmailResponse) return false
+
+          const setTokenResponse = await this.client.set(tokenToEmailKey, email, {expiration})
+          if(!setTokenResponse) return false
+
+          return {done: true}
         }
       },
-      token, email
+      email, token
     )
   }
 }
