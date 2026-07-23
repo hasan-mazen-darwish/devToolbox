@@ -73,12 +73,14 @@ route.post("/signup", async (req, res) => {
     // Signup logic
 
     // Creating the user:
+    const verificationToken = generateToken(32)
     const { data: _signupData, error: signupError } = await supabase.auth.admin.createUser({
       email: sanitizedEmail,
       password: sanitizedPassword,
       email_confirm: false,
       user_metadata: {
-        name: sanitizedName
+        name: sanitizedName,
+        verification_token: verificationToken
       }
     })
 
@@ -89,7 +91,6 @@ route.post("/signup", async (req, res) => {
     
     // If the user is successfully created, send the client an OK response so he tells the user to login back again after verifying the email.
     else {
-      const verificationToken = generateToken(32)
       const verificationLink = getVerificationLink(verificationToken, sanitizedEmail)
       await redisInstance.connect()
 
@@ -219,7 +220,9 @@ route.post("/resend-verification",
         else {
           const verificationToken = generateToken(32)
           const { data: userDataForName, error: errorOfName } = await supabase.from("users").select("name").eq("id", user.id).limit(1)
+          const { error: verificationTokenResetInDatabaseError } = await supabase.rpc("update_user_verification_token", { p_user_uuid: user.id, p_verification_token: verificationToken })
           if(errorOfName) throw errorOfName
+          else if(verificationTokenResetInDatabaseError) throw verificationTokenResetInDatabaseError
           else {
             const username = userDataForName[0].name as string
             const isEmailSent = await sendEmail(
