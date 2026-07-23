@@ -30,6 +30,7 @@ const getEmailBody = ({sanitizedName, verificationLink} : {sanitizedName: string
     <p>If you didn't sign up, ignore twhat if I add a random string generatorhis email.</p>
   `
 }
+const getVerificationLink = (verificationToken: string, email: string) => `http://localhost:${process.env.PORT}/authentication/email-verfication-token-verify?token=${verificationToken}&email=${email}`
 
 route.post("/signup", async (req, res) => {
   routeFunctionWrapper(async () => {
@@ -72,7 +73,7 @@ route.post("/signup", async (req, res) => {
     // Signup logic
 
     // Creating the user:
-    const { data: signupData, error: signupError } = await supabase.auth.admin.createUser({
+    const { data: _signupData, error: signupError } = await supabase.auth.admin.createUser({
       email: sanitizedEmail,
       password: sanitizedPassword,
       email_confirm: false,
@@ -88,21 +89,18 @@ route.post("/signup", async (req, res) => {
     
     // If the user is successfully created, send the client an OK response so he tells the user to login back again after verifying the email.
     else {
-      const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-        email: sanitizedEmail,
-        type: "signup",
-        password: sanitizedPassword,
-        options: {
-          redirectTo: `http://localhost:${process.env.PORT!}/authentication/callback`
-        }
-      })
+      const verificationToken = generateToken(32)
+      const verificationLink = getVerificationLink(verificationToken, sanitizedEmail)
+      await redisInstance.connect()
 
-      if(linkError) return errorResponser(res, {
-        errorCode: "emailVerificationFailed",
-        status: 502
-      })
+      const redisTokenResult = await redisInstance.emailVerifier("set", {token: verificationToken, email: sanitizedEmail})
 
-      const verificationLink = linkData.properties.action_link
+      if(!redisTokenResult || !redisTokenResult.done) {
+        return errorResponser(res, {
+          errorCode: "emailVerificationFailed",
+          status: 502
+        })
+      }
 
       const emailSent = await sendEmail(
         sanitizedEmail,
@@ -226,7 +224,7 @@ route.post("/resend-verification",
             const username = userDataForName[0].name as string
             const isEmailSent = await sendEmail(
               newEmail,
-              getEmailBody({sanitizedName: username, verificationLink: `http://localhost:${process.env.PORT}/authentication/email-verfication-token-verify?token=${verificationToken}&email=${newEmail}`}),
+              getEmailBody({sanitizedName: username, verificationLink: getVerificationLink(verificationToken, newEmail)}),
               "Verify your E-mail",
               username
             )
@@ -241,7 +239,7 @@ route.post("/resend-verification",
             
             await redisInstance.connect()
             const redisTokenRegistered = await redisInstance.emailVerifier("set", {token: verificationToken, email: newEmail})
-            if(!redisTokenRegistered) throw new Error("Redis Token Unregistered")
+            if(!redisTokenRegistered || !redisTokenRegistered.done) throw new Error("Redis Token Unregistered")
             return responser(res, {error: false, status: 200})
           }
         }
